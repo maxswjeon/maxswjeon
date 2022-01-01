@@ -1,4 +1,4 @@
-import Character from '../images/icons/android-icon-192x192.jpg';
+import Character from './images/character.jpg';
 import ContactSection from './sections/ContactSection';
 import EducationSection from './sections/EducationSection';
 import ProjectSection from './sections/ProjectSection';
