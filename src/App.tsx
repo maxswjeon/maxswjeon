@@ -1,4 +1,4 @@
-import Character from './images/character.jpg';
+import Character from './images/icons/character.png';
 import ContactSection from './sections/ContactSection';
 import EducationSection from './sections/EducationSection';
 import ProjectSection from './sections/ProjectSection';
