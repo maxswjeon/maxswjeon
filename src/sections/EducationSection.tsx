@@ -3,7 +3,9 @@ const EducationSection = () => (
         <h2 className="print:text-[16pt] font-bold text-2xl">Education</h2>
         <div className="grid grid-cols-12 print:text-[11pt] text-lg gap-3">
             <p className="md:col-span-2 col-span-3 text-gray-500">2021.03 ~ 현재</p>
-            <p className="md:col-span-10 col-span-9">연세대학교 전기전자공학부 학사과정 (2학기 재학)</p>
+            <p className="md:col-span-10 col-span-9">연세대학교 전기전자공학부 학사과정</p>
+            <p className="md:col-span-2 col-span-3 text-gray-500">2018.03 ~ 2021.02</p>
+            <p className="md:col-span-10 col-span-9">마포고등학교</p>
         </div>
     </section>
 );

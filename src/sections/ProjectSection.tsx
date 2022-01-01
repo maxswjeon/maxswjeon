@@ -47,7 +47,7 @@ const ProjectSection = () => {
                 <input
                     defaultValue={query ? query : ''}
                     type="text"
-                    className="border border-gray-400 my-3 p-2 w-100 print:hidden"
+                    className="border border-gray-400 my-3 p-2 print:hidden"
                     placeholder="언어 / 라이브러리 찾기"
                     onKeyDown={(e) => {
                         if (e.key === 'Enter') {
