@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+    width: 100vw;
+    height: 100vh;
+
+    font-family: 'Noto Sans KR', sans-serif;;
+}
+
+a {
+    text-decoration: underline dotted black;
+}
+
+h1, h2, h3, h4, h5, h6, a, p, span {
+    word-break: keep-all;
+}
