@@ -3,6 +3,7 @@ import ContactSection from './sections/ContactSection';
 import EducationSection from './sections/EducationSection';
 import ProjectSection from './sections/ProjectSection';
 import CertificateSection from './sections/CertificateSection';
+// import SkillsSection from './sections/SkillsSection';
 
 function App() {
     return (
@@ -25,6 +26,7 @@ function App() {
                 <EducationSection />
                 <ProjectSection />
                 <CertificateSection />
+                {/*<SkillsSection />*/}
             </div>
             <p className="text-center my-5 print:hidden">
                 이 페이지는 vite, react, tailwindcss로 제작되었습니다.

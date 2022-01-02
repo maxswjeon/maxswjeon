@@ -8,8 +8,8 @@ const projectToHtml = (project: Project, query?: string) => {
     ) {
         return (
             <div key={project.name} className="grid grid-cols-12 py-2 gap-3">
-                <p className="md:col-span-2 col-span-3 text-gray-500">{project.duration}</p>
-                <div className="md:col-span-10 col-span-9 print:text-[11pt] text-lg">
+                <p className="md:col-span-2 col-span-3 text-gray-500 py-2">{project.duration}</p>
+                <div className={`md:col-span-10 col-span-9 print:text-[11pt] text-lg py-2`}>
                     <h3 className="font-bold">{project.name}</h3>
                     <p>{project.description}</p>
                     <p className="my-2">
@@ -43,7 +43,7 @@ const ProjectSection = () => {
     return (
         <section className="mb-3 border-b-2 border-b-gray-200 py-2">
             <div className="sm:flex sm:justify-between sm:items-center">
-                <h2 className="print:text-[16pt] font-bold text-2xl">Projects</h2>
+                <h2 className="print:text-[16pt] font-bold text-2xl mb-3">Projects</h2>
                 <input
                     defaultValue={query ? query : ''}
                     type="text"

@@ -1,8 +1,8 @@
 const ContactSection = () => {
     return (
         <section className="mb-3 border-b-2 border-b-gray-200 py-2">
-            <h2 className="print:text-[16pt] text-2xl font-bold mb-2">Contact & Social</h2>
-            <div className="grid grid-cols-12 print:text-[11pt] text-lg gap-3">
+            <h2 className="print:text-[16pt] text-2xl font-bold mb-3">Contact & Social</h2>
+            <div className="grid grid-cols-12 print:text-[11pt] text-lg">
                 <p className="font-bold lg:col-span-2 col-span-3">Email</p>
                 <p className="lg:col-span-4 col-span-9 sm:text-left text-right">
                     <a href="mailto://maxswjeon@gmail.com">maxswjeon@gmail.com</a>
