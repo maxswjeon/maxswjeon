@@ -42,7 +42,7 @@ const ProjectSection = () => {
 
     return (
         <section className="mb-3 border-b-2 border-b-gray-200 py-2">
-            <div className="flex justify-between items-center">
+            <div className="sm:flex sm:justify-between sm:items-center">
                 <h2 className="print:text-[16pt] font-bold text-2xl">Projects</h2>
                 <input
                     defaultValue={query ? query : ''}
