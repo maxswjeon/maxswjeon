@@ -26,7 +26,7 @@ function App() {
                 <ProjectSection />
                 <CertificateSection />
             </div>
-            <p className="text-center my-5">
+            <p className="text-center my-5 print:hidden">
                 이 페이지는 vite, react, tailwindcss로 제작되었습니다.
                 <br />
                 <a href="https://github.com/maxswjeon/maxswjeon">소스 보기</a>
