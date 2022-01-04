@@ -97,7 +97,7 @@ const Projects: Project[] = [
     {
         name: 'OpenCV를 이용한 Atari Breakout 구현',
         description:
-            '웹캠으로 받은 영상에서 특정 색 영역을 추출하며 좌표를 구하고, 좌표를 게임과 연동시켜 인터렉티브한 게임을 제작하였습니다.',
+            '웹캠으로 받은 영상에서 특정 색 영역을 추출하며 좌표를 구하고, 좌표를 게임과 연동시켜 인터렉티브한 게임을 제작하였습니다. ',
         duration: '2019.10 ~ 2019.12.',
         languages: ['Python'],
         libraries: ['OpenCV'],
@@ -106,8 +106,8 @@ const Projects: Project[] = [
     {
         name: 'Bluetooth Beacon을 이용한 실내에서의 위치 측정',
         description:
-            '블루투스 비콘 수신기를 고정, 블루투스 비콘이 움직이는 형태의 기법을 사용하였습니다.' +
-            '고정된 수신기에서 읽어온 RSSI값을 기반으로 삼각법(Trigonometry)을 사용하여 실내애네서의 위치를 추정하였습니다' +
+            '블루투스 비콘 수신기를 고정, 블루투스 비콘이 움직이는 형태의 기법을 사용하였습니다. ' +
+            '고정된 수신기에서 읽어온 RSSI값을 기반으로 삼각법(Trigonometry)을 사용하여 실내애네서의 위치를 추정하였습니다. ' +
             'Kalman Filter를 사용하여 측정 정확도를 향상하였습니다.',
         duration: '2019.08. ~ 2019.09.',
         languages: ['Python'],
