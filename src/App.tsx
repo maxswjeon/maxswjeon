@@ -23,8 +23,8 @@ function App() {
                         alt="Profile Image"
                     />
                 </header>
-                <CareerSection/>
                 <ContactSection />
+                <CareerSection/>
                 <EducationSection />
                 <ProjectSection />
                 <CertificateSection />
