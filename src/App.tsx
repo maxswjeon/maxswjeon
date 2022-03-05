@@ -3,6 +3,7 @@ import ContactSection from './sections/ContactSection';
 import EducationSection from './sections/EducationSection';
 import ProjectSection from './sections/ProjectSection';
 import CertificateSection from './sections/CertificateSection';
+import CareerSection from './sections/CareerSection';
 // import SkillsSection from './sections/SkillsSection';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                         alt="Profile Image"
                     />
                 </header>
+                <CareerSection/>
                 <ContactSection />
                 <EducationSection />
                 <ProjectSection />
