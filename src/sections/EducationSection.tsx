@@ -5,7 +5,7 @@ const EducationSection = () => (
             <p className="md:col-span-2 col-span-3 text-gray-500">2021.03 ~ 현재</p>
             <p className="md:col-span-10 col-span-9">연세대학교 전기전자공학부 학사과정</p>
             <p className="md:col-span-2 col-span-3 text-gray-500">2018.03 ~ 2021.02</p>
-            <p className="md:col-span-10 col-span-9">마포고등학교</p>
+            <p className="md:col-span-10 col-span-9">마포고등학교 (과학중점과정)</p>
         </div>
     </section>
 );
