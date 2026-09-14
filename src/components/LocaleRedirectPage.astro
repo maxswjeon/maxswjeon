@@ -1,0 +1,38 @@
+---
+import { site } from '../config';
+
+interface Props {
+  path: string;
+}
+
+const { path } = Astro.props;
+const [pathname, presetFragment = ''] = path.split('#');
+const fragment = presetFragment ? `#${presetFragment}` : '';
+const koHref = `/ko${pathname}${fragment}`;
+const enHref = `/en${pathname}${fragment}`;
+const canonical = new URL(koHref, site.url).toString();
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,follow" />
+    <link rel="canonical" href={canonical} />
+    <title>Language redirect :: Sangwan Jeon</title>
+    <script is:inline define:vars={{ pathname, fragment }}>
+      const preferredLocale = (navigator.languages || [navigator.language])
+        .map((language) => language.toLowerCase().split('-')[0])
+        .find((language) => language === 'ko' || language === 'en') || 'ko';
+      location.replace(`/${preferredLocale}${pathname}${location.search}${location.hash || fragment}`);
+    </script>
+    <meta http-equiv="refresh" content={`0;url=${koHref}`} />
+  </head>
+  <body>
+    <main>
+      <p>언어를 선택해 주세요. Choose a language.</p>
+      <p><a href={koHref} lang="ko">한국어</a> <a href={enHref} lang="en">English</a></p>
+    </main>
+  </body>
+</html>

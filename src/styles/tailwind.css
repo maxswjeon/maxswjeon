@@ -1,0 +1,119 @@
+@layer theme, base, utilities;
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities) source("../");
+
+@theme {
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --font-mono: "D2Coding", "Pretendard Variable", Pretendard, monospace;
+  --color-canvas: #090b0f;
+  --color-canvas-deep: #0f141a;
+  --color-surface: #f4f5f2;
+  --color-ink: #111820;
+  --color-ink-soft: #56616b;
+  --color-signal: #53e0c2;
+  --leading-display: 1.12;
+  --leading-heading: 1.22;
+  --leading-copy: 1.9;
+  --leading-meta: 1.65;
+}
+
+@layer base {
+  @font-face {
+    font-family: "D2Coding";
+    src: url("https://naver.github.io/d2-coding-font/fonts/D2Coding-Regular.woff2") format("woff2");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+  }
+
+  :root {
+    --size-meta: 0.8125rem;
+    --size-small: 0.9375rem;
+    --size-body: clamp(1rem, 0.3vw + 0.94rem, 1.125rem);
+    --canvas: #090b0f;
+    --canvas-deep: #0f141a;
+    --surface: #f4f5f2;
+    --surface-soft: #e8ebec;
+    --ink: #111820;
+    --ink-soft: #56616b;
+    --text: #f2f4f7;
+    --text-soft: #9aa5b4;
+    --signal: #53e0c2;
+    --signal-dark: #087f6c;
+    --signal-soft: #c9f8ed;
+    --rule: rgb(255 255 255 / 10%);
+    --rule-dark: rgb(17 24 32 / 20%);
+    --focus: #70a5ff;
+    --color-text: var(--ink);
+    --color-surface: var(--surface);
+    --color-accent: var(--signal-dark);
+    --color-focus: #0759b8;
+    --shell: min(100% - clamp(2rem, 5vw, 6rem), 90rem);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html {
+    background: var(--canvas);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+  }
+
+  body {
+    margin: 0;
+    min-width: 320px;
+    overflow-x: hidden;
+  }
+
+  main {
+    overflow: clip;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.24em;
+  }
+
+  a:hover {
+    color: var(--signal);
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 4px;
+  }
+
+  button {
+    font: inherit;
+  }
+}
+
+@media (max-width: 719px) {
+  :root {
+    --shell: min(100% - 2rem, 90rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

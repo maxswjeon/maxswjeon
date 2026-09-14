@@ -1,0 +1,62 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../config';
+import type { Locale } from '../../i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const copy = locale === 'ko' ? {
+  description: 'swjeon.kr의 선택적 방문 분석과 추적 설정 안내입니다.',
+  heading: '방문 분석과 선택권.',
+  intro: '사이트를 개선하는 데 필요한 범위에서 선택적 방문 분석 도구를 사용할 수 있습니다. 필수 기능 외 추적은 방문자의 선택을 따릅니다.',
+  essential: '필수 기능은 페이지 제공과 추적 설정 저장에 사용됩니다.',
+  analytics: '분석은 방문한 페이지, 유입 경로, 기기·브라우저 같은 사용 정보를 집계해 사이트 개선에 활용할 수 있습니다.',
+  interaction: '분석에 동의하면 Microsoft Clarity가 클릭·스크롤과 같은 상호작용을 기록할 수 있습니다. 마케팅은 Kakao Pixel과 Google 광고 측정에 사용됩니다.',
+  unavailable: '설정되지 않은 서비스나 식별자는 로드되지 않습니다. 분석과 마케팅 동의를 각각 선택할 수 있습니다.',
+  control: '선택은 이 브라우저에 저장됩니다. 언제든지 설정을 다시 열어 변경할 수 있으며, 동의를 철회하면 페이지를 새로 불러온 뒤 해당 도구를 로드하지 않습니다. 이미 공급자에게 전달된 데이터와 저장된 쿠키가 자동으로 삭제되지는 않습니다.',
+  open: '추적 설정 열기',
+  contact: '개인정보와 관련한 문의는',
+  contactEnd: '로 보낼 수 있습니다.',
+} : {
+  description: 'How optional analytics work on swjeon.kr and how to manage tracking preferences.',
+  heading: 'Visitor analytics and your choices.',
+  intro: 'This site uses optional analytics only to support improvements. Nothing beyond essential functionality is enabled without consent.',
+  essential: 'Essential functions deliver the site and save your tracking preferences.',
+  analytics: 'Analytics may collect aggregate information about visited pages, referrers, devices, and browsers to improve the site.',
+  interaction: 'With analytics enabled, Microsoft Clarity may record interactions such as clicks and scrolling. Marketing consent covers Kakao Pixel and Google Ads measurement.',
+  unavailable: 'Services without a configured identifier are never loaded. Analytics and marketing preferences can be managed independently.',
+  control: 'Your preferences are stored in this browser and can be changed at any time. Withdrawing consent prevents those tools from loading after the page is refreshed. It does not automatically delete cookies or data already sent to a provider.',
+  open: 'Open tracking settings',
+  contact: 'For questions about privacy, email',
+  contactEnd: '.',
+};
+const breadcrumbs = [{ name: 'Home', path: `/${locale}/` }, { name: 'Privacy', path: `/${locale}/privacy/` }];
+---
+
+<BaseLayout title="Privacy" description={copy.description} pathname={`/${locale}/privacy/`} {breadcrumbs} {locale}>
+  <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:pt-18 max-[719px]:pb-24">
+    <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[length:var(--size-meta)] font-bold tracking-[0.04em] text-[var(--signal)] uppercase">Privacy</p>
+    <h1 class="m-0 max-w-[13ch] text-[clamp(3rem,6.5vw,6rem)] leading-display font-bold tracking-[-0.055em] max-[719px]:text-[clamp(3rem,14vw,4.8rem)]">{copy.heading}</h1>
+    <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[length:var(--size-body)] leading-copy text-[var(--text-soft)] max-[719px]:ml-0">{copy.intro}</p>
+  </header>
+  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="categories">
+    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="categories">Categories</h2>
+    <div class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">
+      <p class="mt-0"><strong>{locale === 'ko' ? '필수 기능' : 'Essential functions'}</strong>{copy.essential.replace(locale === 'ko' ? '필수 기능' : 'Essential functions', '')}</p>
+      <p><strong>{locale === 'ko' ? '분석' : 'Analytics'}</strong>{copy.analytics.replace(locale === 'ko' ? '분석' : 'Analytics', '')}</p>
+      <p>{copy.interaction}</p>
+      <p>{copy.unavailable}</p>
+    </div>
+  </section>
+  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="control">
+    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="control">Control</h2>
+    <div class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">
+      <p class="mt-0">{copy.control}</p>
+      <p><button class="inline-flex cursor-pointer items-center gap-[0.45rem] border-0 bg-transparent p-0 font-bold text-[var(--signal)]" type="button" data-tracking-settings>{copy.open} <span aria-hidden="true">→</span></button></p>
+    </div>
+  </section>
+  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="contact">
+    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="contact">Contact</h2>
+    <p class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">{copy.contact} <a href={`mailto:${site.email}`}>{site.email}</a>{copy.contactEnd}</p>
+  </section>
+</BaseLayout>

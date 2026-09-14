@@ -1,0 +1,53 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import type { Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  archive: readonly (readonly [string, string, string?])[];
+}
+
+const { locale, archive } = Astro.props;
+const copy = locale === 'ko' ? {
+  title: 'Project archive',
+  description: '웹과 하드웨어, 자동화와 커뮤니티를 오가며 만든 이전 작업 아카이브입니다.',
+  heading: '이전 작업의 기록.',
+  intro: '웹과 하드웨어, 자동화와 커뮤니티를 오가며 만들어 온 이전 작업을 모았습니다.',
+  listTitle: '작은 실험과 오래된 프로젝트.',
+} : {
+  title: 'Project archive',
+  description: 'An archive of earlier web, hardware, automation, and community projects.',
+  heading: 'Earlier work.',
+  intro: 'Earlier projects spanning web services, hardware, automation, and community tools.',
+  listTitle: 'Experiments and earlier projects',
+};
+const breadcrumbs = [
+  { name: 'Home', path: `/${locale}/` },
+  { name: 'Work', path: `/${locale}/work/` },
+  { name: 'Archive', path: `/${locale}/work/archive/` },
+];
+---
+
+<BaseLayout title={copy.title} description={copy.description} pathname={`/${locale}/work/archive/`} {breadcrumbs} {locale}>
+  <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:pt-18 max-[719px]:pb-24">
+    <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[length:var(--size-meta)] font-bold tracking-[0.04em] text-[var(--signal)] uppercase">Project archive</p>
+    <h1 class="m-0 max-w-[13ch] text-[clamp(3rem,6.5vw,6rem)] leading-display font-bold tracking-[-0.055em] max-[719px]:text-[clamp(3rem,14vw,4.8rem)]">{copy.heading}</h1>
+    <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[length:var(--size-body)] leading-copy text-[var(--text-soft)] max-[719px]:ml-0">{copy.intro}</p>
+  </header>
+  <section class="border-t border-[var(--rule)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-22" aria-labelledby="archive-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <p class="m-0 font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-8 md:text-base">Archive</p>
+      <div class="col-[4/-1] max-[719px]:col-span-full">
+        <h2 class="m-0 mb-[clamp(2.5rem,6vw,5rem)] max-w-[12ch] text-[clamp(2.15rem,4vw,4rem)] leading-heading font-[690] tracking-[-0.06em] break-keep max-[719px]:mb-14" id="archive-title">{copy.listTitle}</h2>
+        <ul class="m-0 list-none border-t border-[var(--rule)] p-0">
+          {archive.map(([title, detail, id]) => (
+            <li class="grid grid-cols-[minmax(12rem,1fr)_2fr] gap-8 border-b border-[var(--rule)] py-6 max-[719px]:grid-cols-1 max-[719px]:gap-[0.4rem]" id={id}>
+              <strong class="tracking-[-0.025em]">{title}</strong>
+              <span class="leading-[1.6] text-[var(--text-soft)]">{detail}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

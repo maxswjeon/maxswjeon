@@ -1,0 +1,16 @@
+---
+import LocaleRedirectPage from '../components/LocaleRedirectPage.astro';
+import { legacyProjectAliases } from '../content/public';
+
+export function getStaticPaths() {
+  return Object.entries(legacyProjectAliases).map(([legacy, destination]) => ({
+    params: { legacy },
+    props: { path: destination.replace(/^\/ko/, '') },
+  }));
+}
+
+interface Props { path: string }
+const { path } = Astro.props;
+---
+
+<LocaleRedirectPage {path} />

@@ -1,0 +1,120 @@
+---
+import { normalizeTrackingConfig } from '../scripts/tracking';
+import type { Locale } from '../i18n';
+
+interface Props { locale?: Locale }
+const { locale = 'ko' } = Astro.props;
+const copy = locale === 'ko' ? {
+  title: '방문 데이터 설정',
+  intro: '사이트 개선을 위한 분석과 선택적 마케팅 측정을 허용할 수 있습니다. 선택 전에는 추적하지 않습니다.',
+  settings: '설정',
+  reject: '모두 거부',
+  accept: '모두 허용',
+  change: '언제든 푸터의 ‘방문 데이터 설정’에서 선택을 바꿀 수 있습니다.',
+  close: '설정 창 닫기',
+  empty: '현재 연결된 방문 데이터 서비스가 없습니다. 서비스를 연결하면 여기에서 동의를 선택할 수 있습니다.',
+  essential: '필수 저장',
+  essentialDescription: '선택한 설정을 이 브라우저에 보관합니다.',
+  analytics: '분석',
+  analyticsDescription: '로 사이트 이용을 파악합니다.',
+  marketing: '마케팅',
+  marketingDescription: '의 광고 성과 측정과 리타게팅 동의를 관리합니다.',
+  storage: '브라우저가 설정 저장을 막았습니다. 선택은 이 페이지에만 적용됩니다.',
+  save: '선택 저장',
+} : {
+  title: 'Visitor data settings',
+  intro: 'Choose whether to allow analytics and marketing measurement. Nothing beyond essential functionality is enabled before a choice is made.',
+  settings: 'Settings',
+  reject: 'Reject all',
+  accept: 'Allow all',
+  change: 'These preferences can be changed at any time from “Visitor data settings” in the footer.',
+  close: 'Close settings',
+  empty: 'No analytics or marketing services are currently configured. Consent options will appear here when one is added.',
+  essential: 'Essential storage',
+  essentialDescription: 'Saves these preferences in this browser.',
+  analytics: 'Analytics',
+  analyticsDescription: 'Usage data is collected through',
+  marketing: 'Marketing',
+  marketingDescription: 'Advertising measurement and retargeting may use',
+  storage: 'This browser blocked preference storage. The current selection applies only to this page.',
+  save: 'Save preferences',
+};
+
+const config = normalizeTrackingConfig({
+  googleAnalyticsId: import.meta.env.PUBLIC_GA_MEASUREMENT_ID,
+  googleTagManagerId: import.meta.env.PUBLIC_GTM_CONTAINER_ID,
+  clarityProjectId: import.meta.env.PUBLIC_CLARITY_PROJECT_ID,
+  naverAnalyticsId: import.meta.env.PUBLIC_NAVER_WCS_ID,
+  kakaoPixelId: import.meta.env.PUBLIC_KAKAO_PIXEL_ID,
+});
+const analyticsServices = [
+  config.googleTagManagerId ? 'Google Tag Manager' : config.googleAnalyticsId ? 'Google Analytics' : '',
+  config.clarityProjectId ? 'Microsoft Clarity' : '',
+  config.naverAnalyticsId ? 'Naver Analytics' : '',
+].filter(Boolean);
+const marketingServices = [
+  config.googleTagManagerId ? 'Google Tag Manager' : '',
+  config.kakaoPixelId ? 'Kakao Pixel' : '',
+].filter(Boolean);
+---
+
+<div class="[&_[hidden]]:hidden" data-tracking-root data-config={JSON.stringify(config)}>
+  <aside class="fixed right-[clamp(1rem,3vw,2rem)] bottom-[clamp(1rem,3vw,2rem)] z-[100] w-[min(32rem,calc(100vw-2rem))] rounded-[0.2rem] border border-current/20 bg-[var(--color-surface,#f4f5f2)] p-4 text-[var(--color-text,#17202a)] shadow-[0_1rem_3rem_rgb(0_0_0/24%)]" data-tracking-banner hidden aria-labelledby="tracking-banner-title">
+    <div>
+      <strong id="tracking-banner-title">{copy.title}</strong>
+      <p class="mt-[0.35rem] mb-0 text-sm leading-[1.55]">{copy.intro}</p>
+    </div>
+    <div class="mt-[0.9rem] flex flex-wrap justify-end gap-2 max-[32rem]:[&>button]:flex-auto">
+      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-settings>{copy.settings}</button>
+      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-reject-all>{copy.reject}</button>
+      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-transparent bg-[var(--color-accent,#087f6c)] px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-accept-all>{copy.accept}</button>
+    </div>
+  </aside>
+
+  <dialog class="w-[min(34rem,calc(100vw-2rem))] rounded-[0.2rem] border border-current/20 bg-[var(--color-surface,#f4f5f2)] p-0 text-[var(--color-text,#17202a)] backdrop:bg-[rgb(9_17_28/56%)]" data-tracking-dialog aria-labelledby="tracking-dialog-title">
+    <form class="p-[1.1rem]" method="dialog">
+      <div class="mb-[0.8rem] flex items-start justify-between gap-4">
+        <div>
+          <strong id="tracking-dialog-title">{copy.title}</strong>
+          <p class="mt-[0.35rem] mb-0 text-sm leading-[1.55]">{copy.change}</p>
+        </div>
+        <button type="button" class="min-h-10 min-w-10 shrink-0 cursor-pointer border-0 bg-transparent p-1 text-2xl text-inherit focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-close aria-label={copy.close}>×</button>
+      </div>
+
+      <p class="mt-3 mb-0 text-sm leading-[1.55]" data-tracking-empty hidden>
+        {copy.empty}
+      </p>
+
+      <div data-tracking-options>
+        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]">
+          <span class="grid gap-[0.2rem]"><strong>{copy.essential}</strong><small class="leading-[1.45]">{copy.essentialDescription}</small></span>
+          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" checked disabled />
+        </label>
+        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]" hidden={analyticsServices.length === 0}>
+          <span class="grid gap-[0.2rem]"><strong>{copy.analytics}</strong><small class="leading-[1.45]">{locale === 'ko' ? <>{analyticsServices.join(', ')}{copy.analyticsDescription}</> : <>{copy.analyticsDescription} {analyticsServices.join(', ')}.</>}</small></span>
+          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" name="analytics" disabled={analyticsServices.length === 0} />
+        </label>
+        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]" hidden={marketingServices.length === 0}>
+          <span class="grid gap-[0.2rem]"><strong>{copy.marketing}</strong><small class="leading-[1.45]">{locale === 'ko' ? <>{marketingServices.join(', ')}{copy.marketingDescription}</> : <>{copy.marketingDescription} {marketingServices.join(', ')}.</>}</small></span>
+          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" name="marketing" disabled={marketingServices.length === 0} />
+        </label>
+
+        <p class="mt-3 mb-0 rounded-[0.2rem] bg-[color-mix(in_srgb,var(--color-accent,#087f6c)_9%,transparent)] p-[0.65rem] text-sm leading-[1.55]" data-tracking-storage-note role="status" hidden>
+          {copy.storage}
+        </p>
+
+        <div class="mt-[0.9rem] flex flex-wrap justify-end gap-2">
+          <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-reject-all>{copy.reject}</button>
+          <button type="submit" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-transparent bg-[var(--color-accent,#087f6c)] px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]">{copy.save}</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+</div>
+
+<script>
+  import { initializeTracking } from '../scripts/tracking';
+
+  const root = document.querySelector<HTMLElement>('[data-tracking-root]');
+  if (root?.dataset.config) initializeTracking(JSON.parse(root.dataset.config));
+</script>

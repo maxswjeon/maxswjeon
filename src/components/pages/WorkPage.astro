@@ -1,0 +1,186 @@
+---
+import { Image } from 'astro:assets';
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ExperienceWorkList from '../ExperienceWorkList.astro';
+import { experienceMedia } from '../../content/experience-media';
+import type { ExperienceWorkItem, Project, ProjectGroup } from '../../content/public';
+import type { Locale } from '../../i18n';
+
+interface ExperienceEntry {
+  id: string;
+  organization: string;
+  role: string;
+  period: string;
+  body: string;
+  work?: readonly ExperienceWorkItem[];
+  link?: string;
+  organizationLinks?: readonly { label: string; href: string }[];
+}
+
+interface Props {
+  locale: Locale;
+  projectGroups: readonly { id: ProjectGroup; label: string; title: string }[];
+  primaryExperience: ExperienceEntry;
+  experienceEntries: readonly ExperienceEntry[];
+  companyWork: readonly ExperienceWorkItem[];
+  projects: Project[];
+  smallTools: readonly { title: string; body: string; link: string }[];
+}
+
+const { locale, projectGroups, primaryExperience, experienceEntries, companyWork, projects, smallTools } = Astro.props;
+const copy = locale === 'ko' ? {
+  description: '경력과 외주·개인·학교·동아리 프로젝트, 개발 도구를 소개합니다.',
+  heading: '문제를 이해하고, 오래 쓸 수 있는 흐름으로 바꿉니다.',
+  intro: '제품, 운영, 인프라의 경계를 오가며 사람의 수고를 줄이는 일을 해왔습니다.',
+  projectsTitle: '프로젝트 모음',
+  relatedOrganizations: '관련 조직',
+  toolsTitle: '개발자의 반복 작업을 덜어내는 도구.',
+  openSource: 'Open source',
+  archive: '이전 프로젝트 아카이브',
+} : {
+  description: 'Professional experience, client work, personal, school, and community projects, and developer tools.',
+  heading: 'Understand the problem, then build for the long term.',
+  intro: 'Experience spans product engineering, operations, and infrastructure, with a consistent focus on reducing manual effort.',
+  projectsTitle: 'Projects',
+  relatedOrganizations: 'Related organizations',
+  toolsTitle: 'Tools that reduce repetitive development work',
+  openSource: 'Open source',
+  archive: 'Browse earlier projects',
+};
+const breadcrumbs = [
+  { name: 'Home', path: `/${locale}/` },
+  { name: 'Work', path: `/${locale}/work/` },
+];
+const experienceMediaCopy = locale === 'ko' ? {} : {
+  zible: {
+    alt: 'Three mobile screens from ZIBLE showing login and scrapbook features',
+    caption: 'ZIBLE mobile service screens',
+  },
+};
+---
+
+<BaseLayout title="Work" description={copy.description} pathname={`/${locale}/work/`} {breadcrumbs} {locale}>
+  <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-[4.5rem_6rem]">
+    <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[var(--signal)] text-[length:var(--size-meta)] font-bold uppercase tracking-[0.04em]">Work</p>
+    <h1 class="m-0 max-w-[13ch] text-[clamp(3rem,6.5vw,6rem)] font-bold tracking-[-0.055em] leading-display max-[719px]:text-[clamp(3rem,14vw,4.8rem)]">{copy.heading}</h1>
+    <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[var(--text-soft)] text-[length:var(--size-body)] leading-copy max-[719px]:ml-0">{copy.intro}</p>
+  </header>
+
+  <section class="border-t border-transparent bg-[var(--surface)] py-[clamp(5rem,10vw,10rem)] text-[var(--ink)] max-[719px]:py-[5.5rem]" aria-labelledby="experience-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <p class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal-dark)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-8" id="experience-title">Experience</p>
+      <div class="col-start-4 col-span-9 max-[719px]:col-span-full max-[719px]:col-start-1">
+        <div class="divide-y divide-[var(--rule-dark)] border-y border-[var(--rule-dark)]">
+          <article class="py-12" id={primaryExperience.id}>
+            <header>
+              <p class="mt-0 mb-[0.7rem] font-mono text-[var(--ink-soft)] text-[length:var(--size-meta)] font-normal tracking-normal leading-[1.6]">{primaryExperience.role} · {primaryExperience.period}</p>
+              <h2 class="m-0 max-w-[22ch] text-[clamp(2rem,4vw,4rem)] font-[680] tracking-[-0.055em] leading-heading">{primaryExperience.organization}</h2>
+              <p class="mt-6 max-w-none text-base leading-copy text-[var(--ink-soft)]">{primaryExperience.body}</p>
+            </header>
+            <ExperienceWorkList items={companyWork} {locale} />
+          </article>
+          {experienceEntries.map((item) => {
+            const media = experienceMedia[item.id];
+            const localizedMedia = experienceMediaCopy[item.id as keyof typeof experienceMediaCopy];
+            return (
+              <article class="py-12" id={item.id}>
+                <p class="mt-0 mb-[0.7rem] font-mono text-[var(--ink-soft)] text-[length:var(--size-meta)] font-normal tracking-normal leading-[1.6]">{item.role} · {item.period}</p>
+                <h2 class="m-0 max-w-[22ch] text-[clamp(2rem,4vw,4rem)] font-[680] tracking-[-0.055em] leading-heading">
+                  {item.link
+                    ? <a class="text-inherit underline decoration-[var(--rule-dark)] underline-offset-4" href={item.link} target="_blank" rel="noopener">{item.organization} ↗</a>
+                    : item.organization}
+                </h2>
+                {item.organizationLinks && (
+                  <ul class="mt-5 flex list-none flex-wrap gap-2 p-0" aria-label={`${item.organization} ${copy.relatedOrganizations}`}>
+                    {item.organizationLinks.map((organization) => (
+                      <li>
+                        <a class="inline-flex border border-[var(--rule-dark)] px-2.5 py-1 font-mono text-sm leading-meta text-[var(--signal-dark)] no-underline" href={organization.href} target="_blank" rel="noopener">{organization.label} ↗</a>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <p class="mt-4 max-w-none text-base leading-copy text-[var(--ink-soft)]">{item.body}</p>
+                {item.work && <ExperienceWorkList items={item.work} {locale} />}
+                {media && (
+                  <figure class="mt-8 mb-0">
+                    <Image
+                      class="block h-auto w-full border border-[var(--rule-dark)]"
+                      src={media.src}
+                      alt={localizedMedia?.alt ?? media.alt}
+                      widths={[640, 960, media.src.width]}
+                      sizes="(max-width: 767px) calc(100vw - 2rem), 55vw"
+                      loading="lazy"
+                    />
+                    <figcaption class="mt-3 font-mono text-sm leading-meta text-[var(--ink-soft)]">{localizedMedia?.caption ?? media.caption}</figcaption>
+                  </figure>
+                )}
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-[var(--rule)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-[5.5rem]" aria-labelledby="projects-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <div class="col-span-5 max-[719px]:col-span-full">
+        <p class="m-0 mb-[clamp(2.5rem,6vw,5rem)] font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:mb-8">Projects</p>
+        <h2 class="mt-0 mb-[clamp(2.5rem,6vw,5rem)] max-w-[12ch] text-[clamp(2.15rem,4vw,4rem)] font-[690] tracking-[-0.06em] leading-heading max-[719px]:mb-14" id="projects-title">{copy.projectsTitle}</h2>
+      </div>
+      <div class="col-start-6 col-span-7 max-[719px]:col-span-full max-[719px]:col-start-1">
+        {projectGroups.map((group) => {
+          const groupProjects = projects.filter((project) => project.group === group.id);
+          return groupProjects.length > 0 && (
+            <section class="[&+section]:mt-[clamp(4rem,8vw,7rem)]" aria-labelledby={`project-group-${group.id}`}>
+              <header class="border-b border-[var(--rule)] pb-6">
+                <p class="mt-0 mb-[0.7rem] font-mono text-[var(--signal)] text-[length:var(--size-meta)] font-normal tracking-normal leading-[1.6]">{group.label}</p>
+                <h3 class="m-0 max-w-none text-[clamp(1.85rem,3.2vw,3rem)] font-[660] tracking-[-0.045em] leading-heading" id={`project-group-${group.id}`}>{group.title}</h3>
+              </header>
+              {groupProjects.map((project) => (
+                <article class="relative isolate grid grid-cols-[minmax(0,1fr)_auto] items-end gap-8 border-b border-[var(--rule)] py-[clamp(2rem,4vw,3.5rem)] no-underline before:absolute before:inset-0 before:-z-10 before:bg-[rgba(83,224,194,0.055)] before:opacity-0 before:content-[''] before:transition-opacity before:duration-150 hover:text-[var(--text)] hover:before:opacity-100">
+                  <div>
+                    <p class="mt-0 mb-[0.7rem] font-mono text-[var(--text-soft)] text-[length:var(--size-meta)] font-normal tracking-normal leading-[1.6]">{project.eyebrow}</p>
+                    {project.organizations && (
+                      <ul class="mb-4 flex list-none flex-wrap gap-2 p-0" aria-label={`${project.title} ${copy.relatedOrganizations}`}>
+                        {project.organizations.map((organization) => (
+                          <li>
+                            <a class="inline-flex border border-[var(--rule)] px-2.5 py-1 font-mono text-sm leading-meta text-[var(--signal)] no-underline" href={organization.href} target="_blank" rel="noopener">{organization.label} ↗</a>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    <a class="block text-inherit no-underline" href={getRelativeLocaleUrl(locale, `work/${project.slug}`)}>
+                      <h4 class:list={['mt-0 mb-3 text-[clamp(1.4rem,2.2vw,2rem)] font-[650] tracking-[-0.035em] leading-heading', { 'text-[clamp(1.7rem,3vw,2.75rem)]': project.featured }]}>{project.title}</h4>
+                      <p class="m-0 max-w-none text-[var(--text-soft)] text-[length:var(--size-body)] leading-copy">{project.summary}</p>
+                    </a>
+                  </div>
+                  <span class="text-[1.55rem] text-[var(--signal)]" aria-hidden="true">→</span>
+                </article>
+              ))}
+            </section>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-[var(--rule)] bg-[var(--canvas-deep)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-[5.5rem]" aria-labelledby="tools-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <p class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-8">Small tools</p>
+      <div class="col-start-4 col-span-9 max-[719px]:col-span-full max-[719px]:col-start-1">
+        <h2 class="mt-0 mb-[clamp(2.5rem,6vw,5rem)] max-w-[12ch] text-[clamp(2.15rem,4vw,4rem)] font-[690] tracking-[-0.06em] leading-heading max-[719px]:mb-14" id="tools-title">{copy.toolsTitle}</h2>
+        <ul class="mt-0 mb-0 list-none border-t border-[var(--rule)] p-0 [&_li_p]:max-w-none">
+          {smallTools.map((tool) => (
+            <li class="grid grid-cols-[minmax(5rem,1fr)_minmax(0,4fr)] gap-6 border-b border-[var(--rule)] py-[clamp(1.8rem,4vw,3rem)] max-[719px]:grid-cols-1 max-[719px]:gap-3">
+              <span class="font-mono text-[var(--signal)] text-[length:var(--size-meta)] font-bold leading-[1.5] tabular-nums">{copy.openSource}</span>
+              <div><h3 class="mt-0 mb-3 text-[clamp(1.4rem,2.2vw,2rem)] font-[650] tracking-[-0.035em] leading-heading"><a href={tool.link} target="_blank" rel="noopener">{tool.title} ↗</a></h3><p class="m-0 max-w-none text-[var(--text-soft)] text-[length:var(--size-body)] leading-copy">{tool.body}</p></div>
+            </li>
+          ))}
+        </ul>
+        <p class="mt-10"><a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={getRelativeLocaleUrl(locale, 'work/archive')}>{copy.archive} <span aria-hidden="true">→</span></a></p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

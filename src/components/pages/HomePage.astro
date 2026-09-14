@@ -1,0 +1,116 @@
+---
+import { getRelativeLocaleUrl } from 'astro:i18n';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { site } from '../../config';
+import type { Project, ProjectGroup } from '../../content/public';
+import type { Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  content: {
+    approaches: readonly { title: string; body: string }[];
+    projectGroupLabels: Record<ProjectGroup, string>;
+    projects: Project[];
+    purpose: { headline: string; introduction: string };
+  };
+}
+
+const { locale, content } = Astro.props;
+const { approaches, projectGroupLabels, projects, purpose } = content;
+const featured = projects.filter((project) => project.featured);
+const copy = locale === 'ko' ? {
+  description: '반복되는 수고를 줄이는 제품과 시스템을 만들고, 경험과 지식을 나눕니다.',
+  identity: 'Engineer · Sangwan Jeon',
+  approach: 'Approach',
+  approachTitle: '도구부터 운영까지,\n사람이 일하는 흐름을 봅니다.',
+  selected: 'Selected work',
+  selectedTitle: '생각을\n작동하는 것으로.',
+  allWork: '모든 작업 보기',
+  writingTitle: '배운 것을 설명하며\n다시 이해합니다.',
+  writingBody: '기술과 운영에서 얻은 경험을 글로 정리합니다.',
+  writingLink: 'swjeon.dev에서 읽기',
+} : {
+  description: 'Products and systems that reduce repetitive work, supported by shared experience and knowledge.',
+  identity: 'Engineer · Sangwan Jeon',
+  approach: 'Approach',
+  approachTitle: 'From product development to operations,\nwork starts with people.',
+  selected: 'Selected work',
+  selectedTitle: 'Turning ideas\ninto working systems.',
+  allWork: 'View all work',
+  writingTitle: 'Writing makes\nexperience reusable.',
+  writingBody: 'Technical and operational lessons, documented and shared.',
+  writingLink: 'Read on swjeon.dev',
+};
+const workHref = getRelativeLocaleUrl(locale, 'work');
+---
+
+<BaseLayout description={copy.description} pathname={`/${locale}/`} {locale}>
+  <section class="relative mx-auto grid min-h-[min(52rem,calc(100svh_-_7rem))] w-[var(--shell)] grid-cols-12 content-center gap-6 overflow-clip pt-[clamp(4rem,8vw,8rem)] pb-[clamp(5rem,9vw,8rem)] max-[719px]:min-h-0 max-[719px]:pt-18 max-[719px]:pb-22">
+    <div class="relative z-[2] col-span-11 max-[719px]:col-span-full">
+      <p class="m-0 mb-[clamp(1.5rem,4vw,3rem)] font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:mb-8 md:text-base">{copy.identity}</p>
+      <h1 class="m-0 max-w-[19ch] text-4xl leading-display font-bold tracking-[-0.055em] whitespace-normal text-pretty break-keep sm:text-5xl md:text-[clamp(3rem,6.5vw,6.25rem)]">{purpose.headline}</h1>
+      <div class="mt-[clamp(2.5rem,6vw,5rem)] grid grid-cols-[5fr_3fr] items-end gap-8 max-[719px]:mt-12 max-[719px]:grid-cols-1">
+        <p class="m-0 max-w-none text-[length:var(--size-body)] leading-copy text-[var(--text-soft)]">{purpose.introduction}</p>
+        <div class="flex flex-col items-start gap-[1.15rem] max-[719px]:flex-row max-[719px]:flex-wrap max-[719px]:items-center">
+          <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href="#approach">{locale === 'ko' ? '어떻게 일하는지 보기' : 'Explore the approach'} <span aria-hidden="true">↓</span></a>
+          <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={site.writing} target="_blank" rel="noopener">{locale === 'ko' ? '글 읽기' : 'Read articles'} <span aria-hidden="true">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-transparent bg-[var(--surface)] py-[clamp(5rem,10vw,10rem)] text-[var(--ink)] max-[719px]:py-22" id="approach" aria-labelledby="approach-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <div class="col-span-5 max-[719px]:col-span-full">
+        <p class="m-0 mb-[clamp(2.5rem,6vw,5rem)] font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal-dark)] uppercase max-[719px]:mb-8 md:text-base">{copy.approach}</p>
+        <h2 class="m-0 mb-[clamp(2.5rem,6vw,5rem)] max-w-[12ch] text-[clamp(2.15rem,4vw,4rem)] leading-heading font-[690] tracking-[-0.06em] whitespace-pre-line break-keep max-[719px]:mb-14" id="approach-title">{copy.approachTitle}</h2>
+      </div>
+      <div class="col-[6/-1] max-[719px]:col-span-full">
+        <ol class="m-0 list-none border-t border-[var(--rule-dark)] p-0">
+          {approaches.map((approach) => (
+            <li class="relative border-b border-[var(--rule-dark)] pt-[clamp(2rem,4vw,3.5rem)] pb-[clamp(2.5rem,5vw,4.5rem)]">
+              <h3 class="m-0 max-w-[14ch] text-[clamp(1.5rem,2.5vw,2.35rem)] leading-heading font-[650] tracking-[-0.035em]">{approach.title}</h3>
+              <p class="mt-[1.1rem] mb-0 max-w-none text-[length:var(--size-body)] leading-copy text-[var(--ink-soft)] max-[719px]:pr-4">{approach.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="border-t border-[var(--rule)] bg-[var(--canvas-deep)] py-[clamp(5rem,10vw,10rem)] text-[var(--text)] max-[719px]:py-22" aria-labelledby="selected-title">
+    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6">
+      <div class="col-span-5 max-[719px]:col-span-full">
+        <p class="m-0 mb-[clamp(2.5rem,6vw,5rem)] font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:mb-8 md:text-base">{copy.selected}</p>
+        <h2 class="m-0 mb-[clamp(2.5rem,6vw,5rem)] max-w-[12ch] text-[clamp(2.15rem,4vw,4rem)] leading-heading font-[690] tracking-[-0.06em] whitespace-pre-line text-[var(--text)] break-keep max-[719px]:mb-14" id="selected-title">{copy.selectedTitle}</h2>
+      </div>
+      <div class="col-[6/-1] max-[719px]:col-span-full">
+        <div class="border-t border-[var(--rule)]">
+          {featured.map((project, index) => (
+            <a class="grid grid-cols-[3rem_minmax(0,1fr)_auto] items-start gap-5 border-b border-[var(--rule)] py-[clamp(2.25rem,4vw,3.5rem)] text-[var(--text)] no-underline hover:text-[var(--text)] max-[719px]:grid-cols-[2rem_minmax(0,1fr)_auto] max-[719px]:gap-3" href={getRelativeLocaleUrl(locale, `work/${project.slug}`)}>
+              <span class="pt-2 font-mono text-[length:var(--size-meta)] text-[var(--text-soft)] tabular-nums">0{index + 1}</span>
+              <div>
+                <p class="mt-0 mb-[0.7rem] font-mono text-[length:var(--size-meta)] leading-[1.6] font-normal tracking-normal text-[var(--signal)]">{projectGroupLabels[project.group]} · {project.eyebrow}</p>
+                <h3 class="m-0 text-[clamp(1.8rem,3.5vw,3.5rem)] leading-heading font-[650] tracking-[-0.045em] max-[719px]:text-[clamp(1.75rem,8.5vw,2.75rem)]">{project.title}</h3>
+                <p class="mt-[1.1rem] mb-0 max-w-none text-[length:var(--size-body)] leading-copy text-[var(--text-soft)]">{project.summary}</p>
+              </div>
+              <span class="text-[clamp(1.5rem,3vw,2.5rem)] text-[var(--signal)]" aria-hidden="true">↗</span>
+            </a>
+          ))}
+        </div>
+        <p class="mt-12 mb-0"><a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={workHref}>{copy.allWork} <span aria-hidden="true">→</span></a></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-[var(--surface)] text-[var(--ink)]" aria-labelledby="writing-title">
+    <div class="mx-auto grid min-h-[31rem] w-[var(--shell)] grid-cols-[2fr_6fr_2fr] items-center gap-8 py-[clamp(4rem,8vw,7rem)] max-[900px]:grid-cols-[1fr_4fr_1.25fr] max-[719px]:min-h-[30rem] max-[719px]:grid-cols-[1fr_auto] max-[719px]:content-between">
+      <p class="m-0 self-start font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal-dark)] uppercase max-[719px]:col-span-full md:text-base">Writing</p>
+      <div class="max-[719px]:col-span-full">
+        <h2 class="m-0 max-w-[12ch] text-[clamp(2.3rem,4.5vw,4.5rem)] leading-heading font-bold tracking-[-0.05em] whitespace-pre-line max-[719px]:text-[clamp(2.75rem,13vw,4.4rem)]" id="writing-title">{copy.writingTitle}</h2>
+        <p class="mt-6 mb-0 text-[length:var(--size-body)] leading-copy font-medium">{copy.writingBody}</p>
+      </div>
+      <a class="inline-flex items-center justify-self-end gap-2 text-[length:var(--size-small)] font-bold text-[var(--ink)] hover:text-[var(--signal-dark)] max-[719px]:col-span-full max-[719px]:mt-6 max-[719px]:justify-self-start" href={site.writing} target="_blank" rel="noopener">{copy.writingLink} <span aria-hidden="true">↗</span></a>
+    </div>
+  </section>
+</BaseLayout>
