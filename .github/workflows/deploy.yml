@@ -1,0 +1,151 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+
+# A deployment cannot be cancelled halfway through its two-phase S3 upload.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Require the main branch
+        run: |
+          if [ "$GITHUB_REF" != 'refs/heads/main' ]; then
+            echo "::error::Production deployments must run from the main branch."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          run_install: false
+
+      - name: Setup Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check
+        run: pnpm run check
+
+      - name: Build
+        run: pnpm run build
+        env:
+          SITE_URL: https://swjeon.kr
+          PUBLIC_WORK_URL: ${{ vars.PUBLIC_WORK_URL }}
+          PUBLIC_GA_MEASUREMENT_ID: ${{ vars.PUBLIC_GA_MEASUREMENT_ID }}
+          PUBLIC_GTM_CONTAINER_ID: ${{ vars.PUBLIC_GTM_CONTAINER_ID }}
+          PUBLIC_CLARITY_PROJECT_ID: ${{ vars.PUBLIC_CLARITY_PROJECT_ID }}
+          PUBLIC_NAVER_WCS_ID: ${{ vars.PUBLIC_NAVER_WCS_ID }}
+          PUBLIC_KAKAO_PIXEL_ID: ${{ vars.PUBLIC_KAKAO_PIXEL_ID }}
+          PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
+          PUBLIC_NAVER_SITE_VERIFICATION: ${{ vars.PUBLIC_NAVER_SITE_VERIFICATION }}
+          PUBLIC_BING_SITE_VERIFICATION: ${{ vars.PUBLIC_BING_SITE_VERIFICATION }}
+
+      - name: Test
+        run: pnpm test
+
+      - name: Upload static site
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: site-${{ github.sha }}-${{ github.run_attempt }}
+          path: dist/
+          if-no-files-found: error
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Validate deployment configuration
+        env:
+          AWS_ROLE_ARN: ${{ vars.AWS_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          set -euo pipefail
+          missing=""
+          [ -n "$AWS_ROLE_ARN" ] || missing="$missing AWS_ROLE_ARN"
+          [ -n "$AWS_REGION" ] || missing="$missing AWS_REGION"
+          [ -n "$S3_BUCKET" ] || missing="$missing S3_BUCKET"
+          [ -n "$CLOUDFRONT_DISTRIBUTION_ID" ] || missing="$missing CLOUDFRONT_DISTRIBUTION_ID"
+          if [ -n "$missing" ]; then
+            echo "::error::The production environment is missing:$missing"
+            exit 1
+          fi
+
+      - name: Download static site
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: site-${{ github.sha }}-${{ github.run_attempt }}
+          path: dist/
+
+      - name: Verify static site artifact
+        run: |
+          test -f dist/index.html
+          test -f dist/404.html
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@cbe3b392738ccf3f987d68400dafcf4b0624a56c # v6.2.4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: swjeon-homepage-${{ github.run_id }}
+
+      # Keep prior fingerprinted assets so HTML already open in a browser can
+      # still load its chunks while the new release becomes visible.
+      - name: Upload immutable assets
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 sync dist/ "s3://$S3_BUCKET/" \
+            --exclude '*' \
+            --include '_astro/*' \
+            --cache-control 'public, max-age=31536000, immutable'
+
+      - name: Upload pages and metadata
+        env:
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+        run: |
+          set -euo pipefail
+          aws s3 sync dist/ "s3://$S3_BUCKET/" \
+            --exclude '_astro/*' \
+            --delete \
+            --cache-control 'public, max-age=0, must-revalidate'
+
+      - name: Invalidate CloudFront
+        env:
+          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id "$CLOUDFRONT_DISTRIBUTION_ID" \
+            --paths '/*'
