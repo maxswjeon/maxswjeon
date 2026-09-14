@@ -1,45 +1,67 @@
-# Sangwan Jeon :: personal website
+# Sangwan Jeon
 
-A bilingual Astro site introducing 전상완 / Sangwan Jeon as an Engineer, with complete `/ko/` and `/en/` routes for About, Work, project details, and Privacy, plus links to the existing writing site. The deployment artifact is entirely static and targets private S3 behind CloudFront.
+Frontend Engineer based in South Korea.
 
-## Run locally
+제품 개발, 운영, 인프라를 함께 다루며 반복 작업을 줄이고 복잡한 업무 흐름을 더 쉽게 관리할 수 있는 제품과 도구를 만듭니다.
 
-Requires Node 24 (locally verified with 24.19.0) and pnpm 12.4.1. The `packageManager` field pins pnpm; Corepack-enabled installations select that version automatically. Commit `pnpm-lock.yaml` and use frozen installs in CI.
+Building software since 2014, with experience spanning product development, operations, infrastructure, and embedded hardware.
 
-```sh
-pnpm install --frozen-lockfile
-cp .env.example .env
-pnpm run dev
-```
+## Work experience
 
-Open http://localhost:4321. Tracking IDs are optional; empty values disable all remote tracking.
+### NGINE STUDIOS · NEXON COMPANY
 
-## Validate
+Frontend Engineer · Full-time · 2024.04-2026.05
 
-```sh
-pnpm run check
-pnpm run build
-pnpm test
-pnpm exec playwright install chromium
-pnpm run test:e2e
-```
+Built and operated internal web solutions that helped grow the active user base of NEXON games and made internal workflows more efficient. Worked with NEXON's Platform Division on product development, infrastructure, and operations.
 
-The Node tests inspect built HTML, canonical URLs, links, publication boundaries, tracking decisions, and CloudFront routing. Browser tests check navigation, responsive overflow, accessibility, no-JavaScript content and tracking behavior. Screenshots are written to `test-results/screenshots/`.
+### Planetarium · Nine Corporation
 
-The `.gitignore` base comes from [gitignore.io](https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows,visualstudiocode), with project-specific Astro, test-output, and private-reference exclusions appended. `pnpm-workspace.yaml` explicitly permits esbuild’s required install script.
+Frontend Engineer · Full-time · 2023.01-2023.04
 
-## Content and design
+Improved the player experience and helped increase daily active users for Nine Chronicles through launcher improvements, account recovery, and a blockchain action proof of concept.
 
-Edit Korean public facts in `src/content/public.ts`, English public facts in `src/content/public.en.ts`, and site links in `src/config.ts`. Component styling lives beside its markup as Tailwind utilities; `src/styles/tailwind.css` is limited to theme tokens and essential element-level base rules. [DESIGN.md](./DESIGN.md) records the design contract. The source handoff, internal Markdown, and PDFs are reference material: never copy `docs/` into `public/` or use it as a content glob. The deployment workflow publishes only `dist/`.
+### ZIBLE
 
-`public/og.png` is a text-only social preview. To regenerate it after copy/design changes, run `node scripts/generate-social-image.mjs` after installing Chromium. It is committed as an asset and does not require a browser during production builds.
+Full Stack Engineer · 2022.09
 
-## Architecture and release
+Measured the effect of OpenGraph link previews on sharing, analyzed user journeys with Datahog and Sentry, and improved the conversion funnel for a home-buying information service.
 
-- [Framework comparison and version validation](./docs/framework-decision.md)
-- [AWS and GitHub Actions setup](./docs/deployment.md)
-- [Tracking configuration and consent](./docs/tracking.md)
+### Promedius Inc.
 
-`SITE_URL` defaults to `https://swjeon.kr`. Public pages use required locale prefixes. In production, the CloudFront viewer-request function negotiates `/ko/` or `/en/` for unprefixed routes from `Accept-Language`; Astro-generated static redirect shells provide the equivalent browser-language fallback in local preview. Writing links to the verified canonical `https://www.swjeon.dev/`; the existing Jekyll engine and post URLs are retained.
+Intern · 2022.01-2022.02
 
-No remote repository mutation, production deployment, or DNS change is part of this local implementation. Review the built output before enabling the supplied GitHub workflows, and keep all internal reference documents excluded.
+Worked on air-gapped, on-premises product infrastructure and internal systems, including license management, FreeIPA, Prometheus, and Grafana.
+
+## Education
+
+- Electrical and Electronic Engineering, [Yonsei University](https://www.yonsei.ac.kr/)
+
+## Languages
+
+- Korean: Native
+- English: Fluent
+
+## Areas of work
+
+- Frontend engineering with TypeScript and React
+- Backend services and internal administration tools
+- Infrastructure, monitoring, and service operations
+- Embedded systems, circuit design, and PCB development
+
+## Links
+
+- [Portfolio](https://swjeon.kr)
+- [Writing](https://www.swjeon.dev/)
+- [LinkedIn](https://www.linkedin.com/in/maxswjeon/)
+- [Email](mailto:contact@swjeon.kr)
+
+## Open source
+
+- [psql-mcp](https://github.com/maxswjeon/psql-mcp): Read-only PostgreSQL access for AI tools
+- [git-wip](https://github.com/maxswjeon/git-wip): Safer work-in-progress commits for Git
+- [FlatType](https://github.com/maxswjeon/flattype): State management for nested objects
+- [RP2040 HUB75](https://github.com/maxswjeon/rp2040-hub75): LED panel control with RP2040 PIO and DMA
+
+## Certification
+
+- Craftsman Information Processing · 2021.12
