@@ -1,0 +1,34 @@
+# 방문 데이터 측정 설정
+
+이 사이트의 측정 스크립트는 정적 빌드 시 `PUBLIC_*` 환경 변수로 켠다. ID를 설정하지 않았거나 형식이 잘못되면 해당 서비스에 대한 스크립트와 네트워크 요청은 생성되지 않는다. 실제 계정 ID는 저장소에 넣지 않는다.
+
+| 환경 변수 | 서비스 | 동의 분류 |
+| --- | --- | --- |
+| `PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4의 Google tag (`G-…`) | 분석 |
+| `PUBLIC_GTM_CONTAINER_ID` | Google Tag Manager (`GTM-…`) | 분석 또는 마케팅 |
+| `PUBLIC_CLARITY_PROJECT_ID` | Microsoft Clarity | 분석 |
+| `PUBLIC_NAVER_WCS_ID` | Naver Analytics의 `wa` ID | 분석 |
+| `PUBLIC_KAKAO_PIXEL_ID` | Kakao Pixel Track ID | 마케팅 |
+
+`PUBLIC_GTM_CONTAINER_ID`가 있으면 직접 Google tag는 로드하지 않는다. GA4는 GTM 컨테이너 안에서 구성해야 하며, 두 방식을 함께 구성해서 페이지뷰가 중복되는 일을 피한다. GTM의 각 태그에는 내장 동의 검사를 설정하고, GA4 페이지 위치에는 데이터 레이어의 `tracking_page_location`을 사용한다.
+
+공통 레이아웃에서 `<Tracking />`을 한 번 렌더링한다. 푸터처럼 다른 컴포넌트에서 설정 창을 열려면 버튼이나 링크에 `data-tracking-settings` 속성을 붙인다. 연결된 서비스가 하나도 없을 때도 설정 창은 현재 활성 서비스가 없다고 설명한다.
+
+```astro
+<button type="button" data-tracking-settings>방문 데이터 설정</button>
+```
+
+첫 방문의 기본값은 분석·마케팅 모두 거부다. 사용자가 선택하기 전에는 외부 스크립트를 받지 않는다. 선택은 `localStorage`의 `swjeon:tracking-consent:v1`에 저장한다. 영구 저장이 막히면 같은 탭의 `sessionStorage`를 사용한 뒤 새로 불러오며, 둘 다 막힌 경우에만 이를 설정 창에 알리고 현재 페이지에서만 허용한 서비스를 시작한다. 철회할 때도 먼저 세션 선택을 남기고 페이지를 다시 불러와 이전 서비스의 스크립트가 더 실행되지 않게 한다. 외부 측정을 시작하기 직전에 주소 표시줄의 query를 제거하며, Google에 전달하는 `page_location`에도 origin과 path만 사용한다. 정적 페이지 기능을 query parameter에 의존시키지 않는다.
+
+## 공급자 기준과 버전 확인
+
+2026-09-13에 각 공급자의 공식 문서를 다시 확인했다.
+
+- Google은 Google tag 또는 GTM을 각 페이지에 설치하고 Consent Mode의 `ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`를 갱신하도록 안내한다. 이 구현은 기본 동의 상태에서 아무 요청도 보내지 않는 basic consent 방식으로 태그 자체를 지연한다. [Google tag 설치](https://support.google.com/analytics/answer/15756615), [웹 Consent Mode](https://developers.google.com/tag-platform/security/guides/consent)
+- Microsoft는 Clarity의 수동 설치 코드를 `<head>`에 두도록 안내하며, 현재 권장 동의 API는 기존 `consent`를 대체한 `consentv2`다. 이 구현은 분석 동의 후 스크립트를 로드하며 `analytics_Storage`와 `ad_Storage`를 따로 전달한다. [Clarity 설치](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-setup), [Consent API V2](https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-consent-api-v2)
+- Naver Analytics 공식 도움말은 모든 측정 페이지에서 `wcs.naver.com` 요청과 발급 ID인 `wa` 값을 확인하도록 안내하며 HTTPS `wcslog.js` 사용을 요구한다. [설치 확인](https://help.naver.com/service/9864/contents/15516?lang=ko&osType=PC), [HTTPS 지원](https://help.naver.com/service/9864/contents/15373?lang=ko&osType=PC)
+- Kakao Business 공식 가이드는 `kp.js`를 로드한 뒤 `kakaoPixel('Track ID').pageView()` 방문 이벤트를 보내도록 안내한다. [Kakao Pixel 설치](https://kakaobusiness.gitbook.io/main/tool/pixel-sdk/install)
+
+이 공급자들은 브라우저 측정 스크립트에 SemVer 버전이나 고정 파일 버전을 공개하지 않고 동일한 호스팅 URL에서 최신 코드를 제공한다. 따라서 package version을 고정할 대상이 없다. 배포 전후에는 브라우저 개발자 도구와 각 서비스의 실시간/검증 화면에서 스크립트 URL, 동의 전 요청 0건, 동의별 요청, 중복 page view 여부를 확인한다.
+
+Clarity는 미성년자를 대상으로 하는 사이트에 사용하면 안 된다고 공식 문서에 명시한다. 사이트 성격이 바뀌면 활성화 전에 이 조건을 다시 검토한다.
