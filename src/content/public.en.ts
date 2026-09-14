@@ -53,9 +53,9 @@ export const experienceEntries = [
   },
   {
     id: 'zible',
-    organization: 'ZIBLE',
+    organization: 'DCION · ZIBLE',
     role: 'Full Stack Engineer',
-    period: '2022.09',
+    period: '2022.09-2023.01',
     body: 'Worked as a Full Stack Engineer on a home-buying information service. Measured the effect of OpenGraph link previews on sharing, analyzed user journeys with Datahog and Sentry, and used the findings to improve the conversion funnel.',
   },
   {
@@ -308,13 +308,13 @@ export const smallTools = [
 ] as const;
 
 export const archive: readonly (readonly [string, string, string?])[] = [
-  ['Marketing data collection tool', '2021.03-04 · Collected data from advertising platforms and Cafe24 and consolidated it in Google Sheets'],
-  ['Question and polling website', '2021.02-03 · Social login and statistics'],
-  ['Automated Coupang price updates', '2021.02-06 · Price calculation and API automation'],
+  ['Marketing data collection tool', '2021.03-2021.04 · Collected data from advertising platforms and Cafe24 and consolidated it in Google Sheets'],
+  ['Question and polling website', '2021.02-2021.03 · Social login and statistics'],
+  ['Automated Coupang price updates', '2021.02-2021.06 · Price calculation and API automation'],
   ['Discord SSH key management', '2021.02 · Certificate-based access and key revocation management'],
   ['Bluetooth image transfer', '2021.02 · Android and embedded systems integration'],
-  ['OpenCV Atari Breakout', '2019.10-12 · Image-based color region extraction and game input'],
-  ['Indoor positioning with Bluetooth beacons', '2019.08-09 · Two-person research project using RSSI, triangulation, and a Kalman filter'],
+  ['OpenCV Atari Breakout', '2019.10-2019.12 · Image-based color region extraction and game input'],
+  ['Indoor positioning with Bluetooth beacons', '2019.08-2019.09 · Two-person research project using RSSI, triangulation, and a Kalman filter'],
   ['Club member portal', 'Experience with Go and web development'],
   ['Virtual recipient server for Gmail', 'Used LMTP and IMAP'],
   ['Desktop display for music playing on a mobile device', 'Android development'],

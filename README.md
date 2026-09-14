@@ -20,9 +20,9 @@ Frontend Engineer · Full-time · 2023.01-2023.04
 
 Improved the player experience and helped increase daily active users for Nine Chronicles through launcher improvements, account recovery, and a blockchain action proof of concept.
 
-### ZIBLE
+### DCION · ZIBLE
 
-Full Stack Engineer · 2022.09
+Full Stack Engineer · 2022.09-2023.01
 
 Measured the effect of OpenGraph link previews on sharing, analyzed user journeys with Datahog and Sentry, and improved the conversion funnel for a home-buying information service.
 

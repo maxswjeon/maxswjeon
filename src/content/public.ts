@@ -87,9 +87,9 @@ export const experienceEntries = [
   },
   {
     id: 'zible',
-    organization: 'ZIBLE',
+    organization: 'DCION · ZIBLE',
     role: 'Full Stack Engineer',
-    period: '2022.09',
+    period: '2022.09-2023.01',
     body: '내 집 마련 정보를 모으는 서비스에서 OpenGraph 기반 공유 효과를 측정하고, Datahog와 Sentry로 사용 흐름을 확인해 퍼널을 개선했습니다.',
   },
   {
@@ -342,13 +342,13 @@ export const smallTools = [
 ] as const;
 
 export const archive: readonly (readonly [string, string, string?])[] = [
-  ['마케팅 데이터 수집 프로그램', '2021.03-04 · 광고 플랫폼·Cafe24 데이터 수집 및 Sheets 통합'],
-  ['질문·투표 웹사이트', '2021.02-03 · 소셜 로그인 및 통계'],
-  ['쿠팡 상품가격 자동 수정', '2021.02-06 · 가격 계산 및 API 자동화'],
+  ['마케팅 데이터 수집 프로그램', '2021.03-2021.04 · 광고 플랫폼·Cafe24 데이터 수집 및 Sheets 통합'],
+  ['질문·투표 웹사이트', '2021.02-2021.03 · 소셜 로그인 및 통계'],
+  ['쿠팡 상품가격 자동 수정', '2021.02-2021.06 · 가격 계산 및 API 자동화'],
   ['Discord SSH Key 관리', '2021.02 · 인증서 기반 접근·키 차단 관리'],
   ['Bluetooth 이미지 송수신', '2021.02 · Android·임베디드 연동'],
-  ['OpenCV Atari Breakout', '2019.10-12 · 영상 기반 색 영역 추출·게임 입력'],
-  ['Bluetooth Beacon 실내 위치 측정', '2019.08-09 · 2인 공동 연구, RSSI·삼각법·Kalman Filter'],
+  ['OpenCV Atari Breakout', '2019.10-2019.12 · 영상 기반 색 영역 추출·게임 입력'],
+  ['Bluetooth Beacon 실내 위치 측정', '2019.08-2019.09 · 2인 공동 연구, RSSI·삼각법·Kalman Filter'],
   ['동아리 회원 포털', 'Go 및 웹 개발 경험'],
   ['가상 Gmail 수신자 서버', 'LMTP·IMAP 활용'],
   ['휴대폰 재생 음악 정보의 데스크톱 표시', 'Android 개발 경험'],
