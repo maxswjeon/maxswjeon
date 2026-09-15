@@ -22,20 +22,20 @@ interface Props {
 const { locale, primaryExperience, experienceEntries } = Astro.props;
 const copy = locale === 'ko' ? {
   title: 'About',
-  description: '제품 개발, 운영, 문서와 지식 공유를 연결해 일하는 방식을 소개합니다.',
-  heading: '사람이 더 능숙하게 일할 수 있는 환경을 만듭니다.',
-  intro: '제품이 실제로 쓰이고 오래 운영될 수 있도록, 개발부터 인프라와 운영까지 함께 다뤄 왔습니다.',
-  why: '사람들이 제가 만든 프로그램과 시스템에서 편리함을 느끼는 모습을 보며 엔지니어링의 보람을 배웠습니다. 불필요한 수고를 줄이고, 복잡한 일을 이해하고 활용할 수 있는 형태로 바꾸는 데 관심을 둡니다.',
-  how: '제품 개발과 운영, 인프라를 하나의 흐름으로 바라봅니다. 문제를 실제로 겪는 사람에게 필요한 경험을 구현하고, 테스트와 자동화로 반복되는 일을 줄이며, 문서와 지식 공유로 다음 사람이 이어서 일할 수 있게 합니다.',
+  description: '제품 개발과 운영, 문서와 지식 공유를 하나의 흐름으로 잇는 방식을 소개합니다.',
+  heading: ['일을 더 잘할\u00a0수\u00a0있는', '환경을 만듭니다'],
+  intro: '제품이 실제로 쓰이고 오래 운영되도록 개발부터 인프라, 운영까지 함께 다뤄 왔습니다.',
+  why: '사람들이 제가 만든 프로그램과 시스템을 편리하게 쓰는 모습을 보며 엔지니어링의 보람을 배웠습니다. 불필요한 수고를 줄이고 복잡한 일을 이해하고 활용할 수 있는 형태로 바꾸는 데 관심을 둡니다.',
+  how: '제품 개발과 운영, 인프라를 하나의 흐름으로 바라봅니다. 문제를 실제로 겪는 사람에게 필요한 경험을 구현합니다. 테스트와 자동화로 반복되는 일을 줄이고 문서와 지식 공유로 다음 사람이 이어서 일할 수 있게 합니다.',
   experience: 'Experience',
   viewWork: '경력과 작업 살펴보기',
   share: 'Share',
-  shareBody: '배포·운영 경험과 기술 이슈를 동료들과 나누고, 재사용할 수 있는 오픈소스를 정리해 왔습니다. UbuCon Asia 2022에서는 동아리방 재실 확인 프로젝트의 구현 경험을 발표했고, Docker 세미나와 인프라 스터디를 진행했습니다.',
+  shareBody: '배포·운영 경험과 기술 이슈를 동료들과 나누고 재사용할 수 있는 오픈소스를 정리해 왔습니다. UbuCon Asia 2022에서는 동아리방 재실 확인 프로젝트의 구현 경험을 발표했고 Docker 세미나와 인프라 스터디를 진행했습니다.',
   read: '글 읽기',
 } : {
   title: 'About',
   description: 'This approach connects product development, operations, infrastructure, documentation, and knowledge sharing.',
-  heading: 'Making complex work easier to understand and carry out.',
+  heading: ['Build\u00a0environments', 'for\u00a0better\u00a0work'],
   intro: 'Work spans product development, infrastructure, and operations, with an emphasis on software that stays useful and maintainable after launch.',
   why: 'Engineering is most rewarding when a program or system makes someone’s work noticeably easier. That means removing avoidable effort and making complex tasks easier to understand and act on.',
   how: 'Products, operations, and infrastructure are treated as one connected system. Work starts with the people closest to the problem, uses testing and automation to reduce repetitive work, and leaves clear documentation so others can build on it.',
@@ -54,7 +54,9 @@ const breadcrumbs = [
 <BaseLayout title={copy.title} description={copy.description} pathname={`/${locale}/about/`} {breadcrumbs} {locale}>
   <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:pt-18 max-[719px]:pb-24">
     <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[length:var(--size-meta)] font-bold tracking-[0.04em] text-[var(--signal)] uppercase">About</p>
-    <h1 class="m-0 max-w-[13ch] text-[clamp(3rem,6.5vw,6rem)] leading-display font-bold tracking-[-0.055em] max-[719px]:text-[clamp(3rem,14vw,4.8rem)]">{copy.heading}</h1>
+    <h1 class="m-0 max-w-none text-[clamp(2rem,9vw,4rem)] leading-display font-bold tracking-[-0.055em] break-keep md:text-[clamp(3rem,5.8vw,5.25rem)]" aria-label={copy.heading.join(' ').replaceAll('\u00a0', ' ')}>
+      {copy.heading.map((line) => <span class="block lg:whitespace-nowrap" aria-hidden="true">{line}</span>)}
+    </h1>
     <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[length:var(--size-body)] leading-copy text-[var(--text-soft)] max-[719px]:ml-0">{copy.intro}</p>
   </header>
 
@@ -73,7 +75,7 @@ const breadcrumbs = [
         {[primaryExperience, ...experienceEntries].map((item) => (
           <article class="py-7">
             <p class="m-0 font-mono text-sm leading-meta text-[var(--signal)]">{item.period} · {item.role}</p>
-            <h3 class="mt-2 text-xl leading-heading">
+            <h3 class="mt-2 text-balance text-xl leading-heading">
               {item.link
                 ? <a href={item.link} target="_blank" rel="noopener">{item.organization} <span aria-hidden="true">↗</span></a>
                 : item.organization}

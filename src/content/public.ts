@@ -50,10 +50,10 @@ export const projectGroupLabels: Record<ProjectGroup, string> = {
 
 export const primaryExperience = {
   id: 'nexon-ngine-studios',
-  organization: '엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니',
+  organization: '엔진스튜디오 (NGINE\u00a0STUDIOS)\u00a0· 넥슨컴퍼니',
   role: 'Frontend Engineer · 정규직',
   period: '2024.04-2026.05',
-  body: '넥슨코리아의 자회사 엔진스튜디오에서 프론트엔드 엔지니어로 근무했습니다. 넥슨 게임의 활성 이용자를 늘리고 넥슨 임직원의 업무 효율을 높이는 사내 웹 솔루션을 개발했습니다. NEXON 플랫폼본부(구 인텔리전스랩스)와 협업했으며, 제품 개발부터 인프라 구축·운영까지 담당했습니다.',
+  body: '넥슨코리아의 자회사 엔진스튜디오에서 프론트엔드 엔지니어로 근무했습니다. 넥슨 게임의 활성 이용자를 늘리고 넥슨 임직원의 업무 효율을 높이는 사내 웹 솔루션을 개발했습니다. NEXON 플랫폼본부(구 인텔리전스랩스)와 협업했으며 제품 개발부터 인프라 구축·운영까지 담당했습니다.',
 } as const;
 
 export const experienceEntries = [
@@ -62,16 +62,16 @@ export const experienceEntries = [
     organization: '플라네타리움 (나인코퍼레이션)',
     role: 'Frontend Engineer · 정규직',
     period: '2023.01-2023.04',
-    body: '완전 탈중앙화 게임 Nine Chronicles의 DAU를 높이고 더 원활한 플레이 경험을 제공하는 Publishing Product Team에서 프론트엔드 엔지니어로 근무했습니다.',
+    body: 'Publishing Product Team에서 프론트엔드 엔지니어로 근무했습니다. 완전 탈중앙화 게임 Nine Chronicles의 DAU를 높이고 더 원활한 플레이 경험을 제공하는 데 참여했습니다.',
     work: [
       {
-        title: 'Nine Chronicles Launcher',
+        title: 'Nine\u00a0Chronicles Launcher',
         body: '게임 런처의 활성화 흐름을 개선해 사용자 이탈 감소에 기여했습니다.',
         link: 'https://github.com/planetarium/9c-launcher',
       },
       {
-        title: 'Nine Chronicles Account Recovery',
-        body: '사용자가 계정을 복구해 게임에 복귀할 수 있는 포털 계정 복구 서비스를 개발해 복귀 사용자 유입과 DAU 증가에 기여했습니다.',
+        title: 'Nine\u00a0Chronicles Account\u00a0Recovery',
+        body: '사용자가 계정을 복구해 게임에 복귀할 수 있는 포털 계정 복구 서비스를 개발했습니다. 복귀 사용자 유입과 DAU 증가에 기여했습니다.',
         media: 'nine-account-recovery',
       },
       {
@@ -90,14 +90,14 @@ export const experienceEntries = [
     organization: 'DCION · ZIBLE',
     role: 'Full Stack Engineer',
     period: '2022.09-2023.01',
-    body: '내 집 마련 정보를 모으는 서비스에서 OpenGraph 기반 공유 효과를 측정하고, Datahog와 Sentry로 사용 흐름을 확인해 퍼널을 개선했습니다.',
+    body: '내 집 마련 정보를 모으는 서비스에서 OpenGraph 기반 공유 효과를 측정하고 Datahog와 Sentry로 사용 흐름을 확인해 퍼널을 개선했습니다.',
   },
   {
     id: 'promedius',
     organization: '프로메디우스 (Promedius Inc.)',
     role: '인턴',
     period: '2022.01-2022.02',
-    body: '폐쇄망 온프레미스 제품 인프라와 사내 인프라를 함께 다루며 엔터프라이즈 환경의 구축·운영 방식을 경험했습니다.',
+    body: '폐쇄망 온프레미스 제품 인프라와 사내 인프라를 함께 다루며 엔터프라이즈 환경을 구축하고 운영하는 방식을 경험했습니다.',
     work: [
       {
         title: '온프레미스 라이선스 관리 시스템',
@@ -109,7 +109,7 @@ export const experienceEntries = [
       },
       {
         title: 'Prometheus와 Grafana 기반 GPU 사용량 모니터링 시스템 구축',
-        body: 'GPU 사용량을 모니터링할 수 있도록 Prometheus와 Grafana를 구축하고 연동했습니다.',
+        body: 'GPU 사용량을 확인할 수 있도록 Prometheus와 Grafana를 구축하고 연동했습니다.',
       },
     ],
     link: 'https://promedius.ai/',
@@ -117,23 +117,28 @@ export const experienceEntries = [
 ] as const;
 
 export const purpose = {
-  headline: '세상이 더 효율적으로 움직이고, 사람들이 더 능숙하게 일할 수 있도록.',
-  introduction:
-    '불필요한 수고를 줄이는 도구와 시스템을 만들고, 사람들이 이를 이해하고 활용할 수 있도록 경험과 지식을 나눕니다.',
+  headline: [
+    '세상이 더 효율적으로\u00a0움직이고',
+    '사람들이 더 능숙하게 일할\u00a0수\u00a0있도록',
+  ],
+  introduction: [
+    '불필요한 수고를 줄이는 도구와 시스템을 만듭니다.',
+    '만든 도구와 시스템을 다른 사람도 이해하고 활용할 수 있도록 경험과 지식을 나눕니다.',
+  ],
 };
 
 export const approaches = [
   {
-    title: '수고를 줄입니다',
-    body: '반복되는 일과 막히는 지점을 살펴보고, 사람이 판단과 창의적인 일에 더 집중할 수 있는 도구를 만듭니다.',
+    title: ['수고를 줄입니다'],
+    body: '반복되는 일과 막히는 지점을 살펴보고 사람이 판단과 창의적인 일에 더 집중할 수 있는 도구를 만듭니다.',
   },
   {
-    title: '복잡함을 다룰 수 있게 만듭니다',
+    title: ['복잡한 일을 이해하고', '다룰\u00a0수\u00a0있게\u00a0합니다'],
     body: '제품과 운영, 인프라를 따로 떼어 보지 않고 실제로 일을 수행하는 사람의 흐름에서 문제를 정리합니다.',
   },
   {
-    title: '다음 사람이 이어갈 수 있게 남깁니다',
-    body: '구현으로 끝내지 않고 문서와 경험을 공유해, 다른 사람이 이해하고 더 나은 선택을 할 수 있도록 돕습니다.',
+    title: ['배운 것을', '기록하고 나눕니다'],
+    body: '구현에 그치지 않습니다. 문서와 경험을 공유해 다른 사람이 이해하고 더 나은 선택을 할 수 있도록 돕습니다.',
   },
 ];
 
@@ -153,11 +158,11 @@ export const companyWork = [
   },
   {
     title: 'NEXON 내부 CRM을 위한 다매체 발송 시스템',
-    body: '대시보드와 캠페인 운영 기능 개발에 참여했습니다. 운영자가 발송을 관리하고 결과를 파악할 수 있도록 사용자 경험을 개선하고, 테스트와 개발 과정의 자동화를 통해 서비스 품질을 높였습니다.',
+    body: '대시보드와 캠페인 운영 기능 개발에 참여했습니다. 운영자가 발송을 관리하고 결과를 파악할 수 있도록 사용자 경험을 개선했습니다. 테스트와 개발 과정을 자동화해 서비스 품질을 높였습니다.',
   },
   {
     title: 'Voice Creator',
-    body: '서비스 리소스 이관을 지원하고 관련 이슈를 안내했으며, 서비스 정리 업무의 일부를 마지막까지 담당했습니다.',
+    body: '서비스 리소스 이관과 관련 이슈 안내를 지원했습니다. 서비스 정리 업무에도 마지막까지 참여했습니다.',
     links: [
       { label: '홍대 가려면 어디로 가요? 🎤 뉴진스의 하입Voice Creator', source: 'NEXON 플랫폼본부', href: 'https://www.intelligencelabs.tech/310dadb5-6b2f-813d-abbb-f28c50ea3678' },
       { label: '넥슨의 근거 있는 자신감 ‘인텔리전스랩스’', source: '바이라인네트워크', href: 'https://byline.network/2024/01/8-219/' },
@@ -173,7 +178,7 @@ export const companyWork = [
   },
   {
     title: '모바일 웹 기반 AI 이미지 데모',
-    body: 'AI 기반 프로젝트의 사내 데모를 위한 모바일 웹 프론트엔드를 개발했습니다. WASM ImageMagick으로 기기 안에서 이미지 크기와 형식을 변환해, 고용량 이미지와 HEIF 등 모바일 입력의 제약을 줄였습니다.',
+    body: 'AI 기반 프로젝트의 사내 데모를 위한 모바일 웹 프론트엔드를 개발했습니다. WASM ImageMagick으로 기기 안에서 이미지 크기와 형식을 변환해 고용량 이미지와 HEIF 등 모바일 입력의 제약을 줄였습니다.',
   },
 ] as const;
 
@@ -195,10 +200,10 @@ export const projects: Project[] = [
     group: 'client',
     title: '고려씰링 업무 프로세스 관리',
     eyebrow: '업무 프로세스 관리 · 2021년 개발 · 완료',
-    summary: '화이트보드로 관리하던 업무를 웹으로 옮겨 공정·발주·외주와 사용자별 작업 기록을 한곳에서 관리하도록 구현했습니다.',
-    problem: '공정·발주·외주와 사용자별 작업 기록을 화이트보드로 관리하던 업무가 있었습니다.',
+    summary: '화이트보드로 관리하던 업무를 웹으로 옮겼습니다. 공정·발주·외주와 사용자별 작업 기록을 한곳에서 관리할 수 있게 했습니다.',
+    problem: '공정·발주·외주와 사용자별 작업 기록을 화이트보드로 관리하던 업무였습니다.',
     contribution: '기존 업무 과정을 웹에서 다룰 수 있도록 공정, 발주, 외주, 사용자별 기록 기능을 구현했습니다.',
-    change: '흩어진 작업 정보를 한곳에서 확인하고 관리할 수 있는 업무 흐름으로 옮겼습니다.',
+    change: '흩어진 작업 정보를 웹 한곳에서 확인하고 관리할 수 있게 했습니다.',
     status: '2021년 개발 · 완료',
     featured: true,
   },
@@ -210,7 +215,7 @@ export const projects: Project[] = [
     summary: 'RP2040의 PIO·DMA를 활용하는 LED 패널 라이브러리와 회로·PCB 설계 자료를 작성했습니다.',
     problem: 'RP2040으로 여러 HUB75 LED 패널을 하나의 화면처럼 제어하는 작업을 다뤘습니다.',
     contribution: 'RP2040의 PIO와 DMA를 활용하는 제어 라이브러리를 만들고 회로와 PCB 설계 자료를 작성했습니다.',
-    change: '여러 패널을 하나의 화면으로 구성하는 제어 방식을 다뤘습니다.',
+    change: '여러 패널을 하나의 화면으로 구성하고 제어하는 방식을 구현했습니다.',
     status: 'LED 패널 제어 라이브러리와 회로·PCB 설계 자료',
     link: 'https://github.com/maxswjeon/rp2040-hub75',
     featured: true,
@@ -220,10 +225,10 @@ export const projects: Project[] = [
     group: 'community',
     title: 'Bear OJ',
     eyebrow: '프로그래밍 대회 운영 도구',
-    summary: 'DMOJ 채점 엔진을 바탕으로 참가 화면, 관리자 화면과 백엔드를 구성했습니다.',
+    summary: 'DMOJ 채점 엔진을 활용해 참가 화면, 관리자 화면과 백엔드를 구성했습니다.',
     problem: '프로그래밍 대회를 진행하고 참가 상황을 확인할 수 있는 운영 도구가 필요했습니다.',
     contribution: 'DMOJ 채점 엔진을 활용해 참가자와 관리자를 위한 화면 및 백엔드를 구성했습니다.',
-    change: '대회 진행과 참가 상황 확인에 필요한 운영 기능을 마련했습니다.',
+    change: '대회를 진행하고 참가 상황을 확인하는 기능을 구현했습니다.',
     status: 'DMOJ 채점 엔진 기반 대회 운영 도구',
     links: [
       { label: 'Frontend', href: 'https://github.com/maxswjeon/Bear-OJ-frontend' },
@@ -242,8 +247,8 @@ export const projects: Project[] = [
     eyebrow: '수강 신청 정보 탐색',
     summary: '수강 신청에 필요한 마일리지 정보를 찾아볼 수 있는 웹 서비스를 개발했습니다.',
     problem: '수강 신청 판단에 필요한 마일리지 정보를 쉽게 찾아보기 어려웠습니다.',
-    contribution: '프론트엔드와 백엔드, 데이터 수집 작업을 하나의 서비스로 개발했습니다.',
-    change: '분산된 정보를 검색 가능한 웹 경험으로 연결했습니다.',
+    contribution: '프론트엔드와 백엔드를 개발하고 데이터 수집 기능을 구현했습니다.',
+    change: '분산된 정보를 웹에서 검색할 수 있게 했습니다.',
     status: '프론트엔드·백엔드·데이터 수집 개발',
     link: 'https://github.com/maxswjeon/yonsei-mileage-frontend',
   },
@@ -267,7 +272,7 @@ export const projects: Project[] = [
     summary: '본인 PC와 계정의 로컬 데이터를 읽고 활용할 수 있도록 Windows 도구와 MCP 연동을 개발했습니다.',
     problem: '본인 기기와 계정에 흩어진 로컬 데이터를 다른 도구에서 안전하게 읽고 활용할 연결점이 필요했습니다.',
     contribution: 'Windows 도구와 MCP 연동, 로컬 데이터 변경 감지와 읽기 기능을 개발했습니다.',
-    change: '개인 데이터에 로컬 환경에서 접근하고 도구와 연결할 수 있는 기반을 만들었습니다.',
+    change: '개인 데이터에 로컬 환경에서 접근해 다른 도구와 연결할 수 있는 기반을 만들었습니다.',
     status: '네이티브 새 메시지 알림은 아직 구현하지 않았습니다.',
     link: 'https://github.com/maxswjeon/MoniKa',
   },
@@ -276,11 +281,11 @@ export const projects: Project[] = [
     group: 'personal',
     title: 'Cadence',
     eyebrow: '일정과 맥락을 돕는 시스템',
-    summary: '계정과 기기의 정보를 바탕으로 일정과 우선순위를 파악하도록 돕는 개인 프로젝트입니다.',
+    summary: '계정과 기기의 정보를 활용해 일정과 우선순위를 파악하도록 돕는 개인 프로젝트입니다.',
     problem: '여러 맥락에 흩어진 일정과 우선순위를 파악하는 데 반복적인 정리가 필요합니다.',
     contribution: '계정과 기기의 정보를 바탕으로 다음 행동을 제안하는 시스템을 개발했습니다.',
     change: '실제 알림을 보내기 전에 제안 결과를 검토할 수 있는 shadow mode를 구현했습니다.',
-    status: '현재는 shadow mode이며 실제 알림을 전달하는 운영 상태가 아닙니다.',
+    status: '현재 shadow mode에서 실행 중이며 실제 알림은 보내지 않습니다.',
     link: 'https://github.com/maxswjeon/cadence',
   },
   {
@@ -312,7 +317,7 @@ export const projects: Project[] = [
     group: 'community',
     title: 'SpaceY 강연 안내 사이트',
     eyebrow: '강연 안내 · 2023.11',
-    summary: 'SpaceY 강연의 일정과 장소를 안내하는 웹사이트를 짧은 시간 안에 개발하고 배포했습니다.',
+    summary: 'SpaceY 강연의 일정과 장소를 안내하는 웹사이트를 짧은 시간 안에 개발해 배포했습니다.',
     problem: '강연 직전에 참가자가 일정과 장소를 바로 확인할 수 있는 안내 페이지가 필요했습니다.',
     contribution: 'React, Vite, Tailwind CSS로 전체 사이트를 개발하고 배포했습니다.',
     change: '필요한 정보만 빠르게 읽을 수 있는 단일 안내 화면을 두 시간 안에 완성했습니다.',
@@ -327,7 +332,7 @@ export const projects: Project[] = [
     eyebrow: '실시간 재실 확인 · 2022.09',
     summary: '동아리 Wi-Fi 접속 정보를 바탕으로 동아리방에 있는 사람을 실시간으로 확인하는 서비스를 만들었습니다.',
     problem: '동아리방에 누가 있는지 확인하려면 직접 연락하거나 방문해야 했습니다.',
-    contribution: 'FreeRADIUS 기반 802.1X 인프라를 구축하고, LDAP와 ARP scanning을 연결해 접속 사용자를 확인했습니다.',
+    contribution: 'FreeRADIUS 기반 802.1X 인프라를 구축하고 LDAP와 ARP scanning을 연결해 접속 사용자를 확인했습니다.',
     change: 'Wi-Fi 접속 상태를 동아리방 재실 정보로 바꾸어 웹에서 확인할 수 있게 했습니다.',
     status: 'UbuCon Asia 2022 발표',
     organizations: [{ label: 'YCC', href: 'https://www.ycc.club/' }],
@@ -336,7 +341,7 @@ export const projects: Project[] = [
 
 export const smallTools = [
   { title: 'psql-mcp', body: 'AI 도구에 읽기 전용 PostgreSQL 조회 기능을 제공하는 MCP 서버.', link: 'https://github.com/maxswjeon/psql-mcp' },
-  { title: 'git-wip', body: '작업 중 변경을 보존하고 임시 커밋의 실수로 인한 공유를 방지하는 Git 보조 도구.', link: 'https://github.com/maxswjeon/git-wip' },
+  { title: 'git-wip', body: '작업 중 변경을 보존하고 임시 커밋을 실수로 공유하지 않도록 돕는 Git 보조 도구.', link: 'https://github.com/maxswjeon/git-wip' },
   { title: 'FlatType', body: '중첩 객체를 다루는 상태 관리를 돕는 라이브러리.', link: 'https://github.com/maxswjeon/flattype' },
   { title: 'Google Meet Link Generator', body: '조직 인증과 캘린더를 연동한 회의 링크 생성 도구.', link: 'https://github.com/maxswjeon/google-meet-link-generator' },
 ] as const;

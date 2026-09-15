@@ -6,13 +6,13 @@ interface Props { locale?: Locale }
 const { locale = 'ko' } = Astro.props;
 const copy = locale === 'ko' ? {
   title: '방문 데이터 설정',
-  intro: '사이트 개선을 위한 분석과 선택적 마케팅 측정을 허용할 수 있습니다. 선택 전에는 추적하지 않습니다.',
+  intro: '사이트 개선을 위한 분석과 선택적 마케팅 측정을 허용할 수 있습니다. 선택하기 전에는 추적하지 않습니다.',
   settings: '설정',
   reject: '모두 거부',
   accept: '모두 허용',
   change: '언제든 푸터의 ‘방문 데이터 설정’에서 선택을 바꿀 수 있습니다.',
   close: '설정 창 닫기',
-  empty: '현재 연결된 방문 데이터 서비스가 없습니다. 서비스를 연결하면 여기에서 동의를 선택할 수 있습니다.',
+  empty: '현재 연결된 방문 데이터 서비스가 없습니다. 서비스를 연결하면 동의 항목이 여기에 표시됩니다.',
   essential: '필수 저장',
   essentialDescription: '선택한 설정을 이 브라우저에 보관합니다.',
   analytics: '분석',

@@ -3,7 +3,7 @@
 ## Source of truth
 
 - Status: Active
-- Last refreshed: 2026-09-13
+- Last refreshed: 2026-09-15
 - Primary product surfaces: localized `swjeon.kr/ko/` and `swjeon.kr/en/` homes, About, Work, project detail, archive, and Privacy routes under both locale prefixes, `/404.html`, and the external `swjeon.dev` writing site.
 - Evidence reviewed: `.omx/context/cool-technical-redesign-20260913T080834Z.md`, `.omx/artifacts/visual-ralph/moodboard/reference.md`, `docs/IMPLEMENTATION-HANDOFF.md`, `docs/projects-and-experience.md`, `docs/2021.pdf`, `docs/2022.pdf`, the live and legacy `swjeon.kr` portfolio, the user-supplied profile image, verified public project repositories, and the existing route, layout, content, tracking, and style files described by those sources.
 
@@ -35,6 +35,7 @@
 
 - Purpose before proof: introduce the intended change before showing project evidence.
 - Technical editorial continuity: use strong Korean typography, compact monospace metadata, open sections, thin dividers, and deliberate contrast instead of interchangeable cards.
+- Semantic line composition: major display headings define line breaks at complete phrases. Wide layouts keep those phrases intact; narrow layouts balance wrapping inside each phrase and keep short verb groups together so a particle, auxiliary phrase, or predicate never sits alone on the last line. Distinct complete sentences may also occupy separate visual blocks when their roles differ.
 - Content over spectacle: borrow structural ideas from the approved references while keeping this site's identity, claims, assets, and interaction patterns original.
 - Honest specificity: distinguish employment, collaboration, participation, external work, completion, and development states in visible copy.
 - Tradeoffs: the site favors reading quality, factual clarity, accessible static output, and a restrained visual signature over imagery, animation, or application-like chrome.
@@ -43,7 +44,7 @@
 
 - Color: cool near-black `#090b0f` is the principal canvas; selected reading-heavy surfaces use a pure cool off-white `#f4f5f2`. Primary text is a neutral off-white with no beige or yellow cast, secondary text is cool gray, and restrained mint-cyan `#53e0c2` is the interactive accent. A distinct semantic green is reserved for a future real server-health state.
 - Typography: `Pretendard Variable` is the primary family for Korean, Latin, body, and display text. `D2Coding` is limited to indices, metadata, timestamps, and compact status labels, with Pretendard as its explicit fallback so Korean never falls through to a system legacy font. Load only the regular D2Coding webfont face; the second 1.6MB face does not justify its transfer cost for compact metadata. Display type is decisive without overwhelming the page; body text remains at least 16px and metadata at least 13px.
-- Spacing/layout rhythm: fluid page gutters, generous vertical sections, strong first-screen composition, bounded introductory prose measures, thin full-width rules, and an editorial grid that collapses cleanly to one column. Descriptions inside list rows and experience/project containers span the available content column; project-group headings are not artificially width-constrained. Korean display headings use open leading around 1.12-1.22 and prose around 1.85-1.9 so wrapped lines do not feel compressed.
+- Spacing/layout rhythm: fluid page gutters, generous vertical sections, strong first-screen composition, bounded introductory prose measures, thin full-width rules, and an editorial grid that collapses cleanly to one column. Descriptions inside list rows and experience/project containers span the available content column; project-group headings are not artificially width-constrained. Korean display headings use open leading around 1.12-1.22 and prose around 1.85-1.9 so wrapped lines do not feel compressed. Display widths use phrase-aware line data and `text-wrap: balance` rather than character-count containers that can strand the final word.
 - Shape/radius/elevation: square technical geometry, small radii only where state grouping benefits, and no drop-shadow hierarchy or glassmorphism.
 - Motion: only short color, underline, and directional-arrow feedback, targeted below 160ms. Do not use scroll hijacking, parallax, continuous loops, cursor-following motion, magnetic interactions, or entrance sequences that hide content. Remove nonessential motion under `prefers-reduced-motion`.
 - Imagery/iconography: keep the site typography- and content-led while using one verified square profile image in the shared header and verified project-owned or previously published portfolio screenshots alongside their relevant experience/detail content. Store images locally, preserve their natural aspect ratio, and omit media regions when no public or authorized visual exists. Captions describe the image itself and never distinguish a “previous portfolio” from the current one. Use simple typographic indices and directional marks; do not import reference-site logos, unverified imagery, 3D assets, or branded interaction motifs.
@@ -66,7 +67,7 @@
 ## Responsive behavior
 
 - Supported breakpoints/devices: fluid from 360px through wide desktop; retain a structural adaptation around the existing tablet breakpoint; bound line length on wide displays.
-- Layout adaptations: compact navigation may wrap; persistent wide-screen identity and split editorial rows become a clear single-column reading order; hero type scales with `clamp()`; metadata reflows without horizontal scrolling.
+- Layout adaptations: compact navigation may wrap; persistent wide-screen identity and split editorial rows become a clear single-column reading order; hero type scales with `clamp()`; metadata reflows without horizontal scrolling. Major headings keep explicit semantic lines from 1024px upward and allow balanced wrapping within those same phrase groups below 1024px.
 - Touch/hover differences: links and controls keep generous touch targets and visible resting affordances; hover feedback is supplementary and motion remains minimal.
 
 ## Interaction states
@@ -82,7 +83,7 @@
 
 - Tone: direct, calm, and concrete in both Korean and English; established project and product names remain unchanged across locales.
 - Terminology: the public identity is “Engineer”; Korean experience headings use bilingual company labels such as “엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니”, “플라네타리움 (나인코퍼레이션)”, and “프로메디우스 (Promedius Inc.)” so the localized name and official brand remain recognizable. Collaboration is “NEXON 플랫폼본부(구 인텔리전스랩스)”.
-- Microcopy rules: lead with the problem and contribution; avoid personal-name self-reference and first-person English sentences; use short declarative headings; use `::` as the document-title separator and avoid em dashes; state limitations beside the relevant claim; do not invent current status, metrics, dates, links, or personal details. External evidence links use the visible page title verified from the destination rather than generic labels such as “관련 보도” or “공개 자료”.
+- Microcopy rules: lead with the problem and contribution; avoid personal-name self-reference and first-person English sentences; use short declarative headings without terminal periods; use `::` as the document-title separator and avoid em dashes; state limitations beside the relevant claim; do not invent current status, metrics, dates, links, or personal details. External evidence links use the visible page title verified from the destination rather than generic labels such as “관련 보도” or “공개 자료”.
 
 ## Implementation constraints
 

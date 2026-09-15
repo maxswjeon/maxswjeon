@@ -28,10 +28,10 @@ for (const width of [360, 768, 1440]) {
   });
 }
 
-test('core content is available without JavaScript', async ({ browser }) => {
-  const context = await browser.newContext({ javaScriptEnabled: false });
+test('core content is available without JavaScript', async ({ browser, baseURL }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, baseURL });
   const page = await context.newPage();
-  await page.goto('http://127.0.0.1:4321/ko/');
+  await page.goto('/ko/');
   await expect(page.locator('h1')).toContainText('효율');
   await page.getByRole('navigation').getByRole('link', { name: 'Work', exact: true }).click();
   await expect(page.locator('main')).toContainText('엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니');
@@ -174,7 +174,7 @@ test('separates projects by provenance and keeps work wording specific', async (
   await expect(page.locator('#nexon-ngine-studios > div > article > span:first-child')).toHaveText(['01', '02', '03', '04']);
   await expect(page.locator('#nine-corporation > div > article > span:first-child')).toHaveText(['01', '02', '03']);
   await expect(page.getByText('개발과 운영 전반을 전담해')).toBeVisible();
-  await expect(page.getByText('서비스 정리 업무의 일부를 마지막까지')).toBeVisible();
+  await expect(page.getByText('서비스 정리 업무에도 마지막까지 참여했습니다.')).toBeVisible();
   await expect(page.getByRole('heading', { name: '모바일 웹 기반 AI 이미지 데모' })).toBeVisible();
   await expect(page.getByText('WASM ImageMagick으로')).toBeVisible();
 });
@@ -263,17 +263,175 @@ test('keeps the English locale readable at mobile and desktop widths', async ({ 
   }
 });
 
-test('keeps the Korean home statement to three lines on desktop without forced breaks', async ({ page }) => {
+test('keeps major Korean headings on semantic, visually balanced lines', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 960 });
   await page.goto('/ko/');
   const heading = page.locator('h1');
-  expect(await heading.evaluate(element => element.textContent?.includes('\n'))).toBe(false);
-  const lineCount = await heading.evaluate(element => {
+  await expect(heading).toHaveAttribute('aria-label', '세상이 더 효율적으로 움직이고 사람들이 더 능숙하게 일할 수 있도록');
+  await expect(heading.locator(':scope > span')).toHaveText([
+    '세상이 더 효율적으로 움직이고',
+    '사람들이 더 능숙하게 일할 수 있도록',
+  ]);
+  const desktopLines = await heading.locator(':scope > span').evaluateAll(elements => elements.map(element => {
     const range = document.createRange();
     range.selectNodeContents(element);
     return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size;
-  });
-  expect(lineCount).toBeLessThanOrEqual(3);
+  }));
+  expect(desktopLines).toEqual([1, 1]);
+
+  await expect(page.locator('#approach-title')).toHaveAttribute('aria-label', '도구부터 운영까지 일의 흐름을 살핍니다');
+  await expect(page.locator('#approach ol > li').nth(1).locator('h3')).toHaveAttribute('aria-label', '복잡한 일을 이해하고 다룰 수 있게 합니다');
+  await expect(page.locator('#approach ol > li').nth(1).locator('h3 > span')).toHaveText([
+    '복잡한 일을 이해하고',
+    '다룰\u00a0수\u00a0있게\u00a0합니다',
+  ]);
+  await expect(page.locator('#approach ol > li').nth(2).locator('h3')).toHaveAttribute('aria-label', '배운 것을 기록하고 나눕니다');
+  await expect(page.locator('#selected-title')).toHaveAttribute('aria-label', '생각은 시스템이 되어 실제로 작동합니다');
+  await expect(page.locator('#writing-title')).toHaveAttribute('aria-label', '배운 것을 설명하며 다시 이해합니다');
+  await expect(page.locator('footer p[data-multiline-text] > .sr-only')).toHaveText('함께 더 나은 일의 방식을 만들어요');
+  await expect(page.locator('[data-purpose-introduction] > span')).toHaveText([
+    '불필요한 수고를 줄이는 도구와 시스템을 만듭니다.',
+    '만든 도구와 시스템을 다른 사람도 이해하고 활용할 수 있도록 경험과 지식을 나눕니다.',
+  ]);
+  await expect(page.getByRole('link', { name: '일하는 방식 보기' })).toHaveAttribute('href', '#approach');
+  const introductionLineTops = await page.locator('[data-purpose-introduction] > span').evaluateAll(elements =>
+    elements.map(element => Math.round(element.getBoundingClientRect().top)),
+  );
+  expect(new Set(introductionLineTops).size).toBe(2);
+  expect(await page.locator('footer').evaluate(element => Number.parseFloat(getComputedStyle(element).paddingBottom))).toBeGreaterThanOrEqual(48);
+
+  const semanticLineSelectors = [
+    '#approach-title > span',
+    '#approach ol > li h3 > span',
+    '#selected-title > span',
+    '#writing-title > span',
+    'footer p[data-multiline-text] > span[aria-hidden="true"]',
+  ];
+  for (const selector of semanticLineSelectors) {
+    const lineCounts = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size;
+    }));
+    expect(lineCounts.every(count => count === 1), `${selector} must preserve each semantic line at 1440px`).toBe(true);
+  }
+
+  const visualLines = async (route: string) => {
+    await page.goto(route);
+    return page.locator('h1').evaluate(element => {
+      const words: { text: string; top: number }[] = [];
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+      let node = walker.nextNode();
+      while (node) {
+        for (const match of node.textContent?.matchAll(/\S+/g) ?? []) {
+          const range = document.createRange();
+          range.setStart(node, match.index!);
+          range.setEnd(node, match.index! + match[0].length);
+          words.push({ text: match[0], top: Math.round(range.getBoundingClientRect().top) });
+        }
+        node = walker.nextNode();
+      }
+      return [...Map.groupBy(words, word => word.top).values()].map(line => line.map(word => word.text).join(' '));
+    });
+  };
+
+  await page.setViewportSize({ width: 360, height: 960 });
+  for (const route of ['/ko/', '/ko/about/', '/ko/work/']) {
+    const lines = await visualLines(route);
+    expect(lines.at(-1)?.trim().split(/\s+/).length, `${route} must not leave one word on the final line`).toBeGreaterThan(1);
+    if (route === '/ko/') {
+      expect(lines).toHaveLength(4);
+      expect(lines.at(-1)?.replaceAll('\u00a0', ' ')).toBe('일할 수 있도록');
+    }
+  }
+
+  await page.goto('/ko/');
+  for (const selector of semanticLineSelectors) {
+    const lineCounts = await page.locator(selector).evaluateAll(elements => elements.map(element => {
+      const range = document.createRange();
+      range.selectNodeContents(element);
+      return new Set([...range.getClientRects()].map(rect => Math.round(rect.top))).size;
+    }));
+    expect(lineCounts.every(count => count === 1), `${selector} must preserve each semantic line at 360px`).toBe(true);
+  }
+});
+
+test('does not isolate protected heading terms on narrow screens', async ({ page }) => {
+  await page.setViewportSize({ width: 360, height: 960 });
+
+  const visualLines = (selector: string) => page.locator(selector).evaluateAll(elements => elements.flatMap(element => {
+    const words: { text: string; top: number }[] = [];
+    const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+    let node = walker.nextNode();
+    while (node) {
+      if (node.parentElement?.closest('.sr-only')) {
+        node = walker.nextNode();
+        continue;
+      }
+      for (const match of node.textContent?.matchAll(/\S+/g) ?? []) {
+        const range = document.createRange();
+        range.setStart(node, match.index!);
+        range.setEnd(node, match.index! + match[0].length);
+        words.push({ text: match[0], top: Math.round(range.getBoundingClientRect().top) });
+      }
+      node = walker.nextNode();
+    }
+    return [...Map.groupBy(words, word => word.top).values()].map(line => line.map(word => word.text).join(' ').replaceAll('\u00a0', ' '));
+  }));
+
+  for (const route of ['/ko/', '/ko/about/', '/ko/work/', '/en/', '/en/about/', '/en/work/', '/404.html']) {
+    await page.goto(route);
+    const lines = await visualLines('h1, h2, h3, h4, footer p[data-multiline-text]');
+    expect(lines, `${route} must not leave a protected term on its own line`).not.toEqual(expect.arrayContaining([
+      'STUDIOS)',
+      '· 넥슨컴퍼니',
+      '· NEXON COMPANY',
+      'Recovery',
+      'Management',
+      '만들어요',
+      'better',
+      '바꿉니다',
+      'systems',
+      'reusable',
+    ]));
+  }
+});
+
+test('omits terminal periods from title and subtitle text', async ({ page }) => {
+  const routes = [
+    '/404.html',
+    ...['ko', 'en'].flatMap(locale => [
+      `/${locale}/`,
+      `/${locale}/about/`,
+      `/${locale}/work/`,
+      `/${locale}/work/archive/`,
+      `/${locale}/privacy/`,
+      ...[
+        'blis',
+        'coryose-process',
+        'rp2040-hub75',
+        'bear-oj',
+        'yonsei-mileage',
+        'outta-certificates',
+        'monika',
+        'cadence',
+        'shepherd',
+        'fairtrade',
+        'spacey-passion',
+        'clubroom',
+      ].map(slug => `/${locale}/work/${slug}/`),
+    ]),
+  ];
+
+  for (const route of routes) {
+    await page.goto(route);
+    const trailingPeriods = await page.locator('h1, h2, h3, h4, [data-multiline-text]').evaluateAll(elements =>
+      elements
+        .map(element => element.textContent?.replace(/\s+/g, ' ').trim() ?? '')
+        .filter(text => text.endsWith('.')),
+    );
+    expect(trailingPeriods, `${route} has title-level text ending in a period`).toEqual([]);
+  }
 });
 
 test('serves the local profile image and verified project media with dimensions', async ({ page }) => {

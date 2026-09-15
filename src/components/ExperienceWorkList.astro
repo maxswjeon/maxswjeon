@@ -24,7 +24,7 @@ const englishMedia = {
       <span class="font-mono text-[length:var(--size-meta)] font-bold leading-[1.5] text-[var(--signal-dark)] tabular-nums">{String(index + 1).padStart(2, '0')}</span>
       <div class:list={['min-w-0', { 'grid items-start gap-7 md:grid-cols-[minmax(0,1fr)_minmax(16rem,0.72fr)]': item.media }]}>
         <div>
-          <h3 class="m-0 mb-3 text-[clamp(1.4rem,2.2vw,2rem)] font-[650] tracking-[-0.035em] leading-heading">
+          <h3 class="m-0 mb-3 text-balance text-[clamp(1.4rem,2.2vw,2rem)] font-[650] tracking-[-0.035em] leading-heading">
             {item.link
               ? <a href={item.link} target="_blank" rel="noopener">{item.title} <span aria-hidden="true">↗</span></a>
               : item.title}

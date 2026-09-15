@@ -16,7 +16,7 @@ export const projectGroupLabels: Record<ProjectGroup, string> = {
 
 export const primaryExperience = {
   id: 'nexon-ngine-studios',
-  organization: 'NGINE STUDIOS · NEXON COMPANY',
+  organization: 'NGINE\u00a0STUDIOS\u00a0· NEXON\u00a0COMPANY',
   role: 'Frontend Engineer · Full-time',
   period: '2024.04-2026.05',
   body: 'Worked as a Frontend Engineer at NGINE STUDIOS, a subsidiary of NEXON Korea. Built internal web solutions to grow the active user base of NEXON games and help employees work more efficiently. Collaborated with NEXON’s Platform Division, formerly Intelligence Labs, on product development, infrastructure setup, and operations.',
@@ -25,18 +25,18 @@ export const primaryExperience = {
 export const experienceEntries = [
   {
     id: 'nine-corporation',
-    organization: 'Planetarium (Nine Corporation)',
+    organization: 'Planetarium (Nine\u00a0Corporation)',
     role: 'Frontend Engineer · Full-time',
     period: '2023.01-2023.04',
     body: 'Worked as a Frontend Engineer on Planetarium’s Publishing Product Team, with a focus on improving the player experience and increasing daily active users for Nine Chronicles, a fully decentralized game.',
     work: [
       {
-        title: 'Nine Chronicles Launcher',
+        title: 'Nine\u00a0Chronicles Launcher',
         body: 'Improved the game launcher’s activation flow to reduce player drop-off.',
         link: 'https://github.com/planetarium/9c-launcher',
       },
       {
-        title: 'Nine Chronicles Account Recovery',
+        title: 'Nine\u00a0Chronicles Account\u00a0Recovery',
         body: 'Built a portal account recovery service that helped players regain access and return to the game, contributing to DAU growth.',
         media: 'nine-account-recovery',
       },
@@ -83,22 +83,27 @@ export const experienceEntries = [
 ] as const;
 
 export const purpose = {
-  headline: 'Helping the world run more efficiently, so people can work more effectively.',
-  introduction:
-    'Tools and systems can remove unnecessary work. Sharing the experience and knowledge behind them helps others understand and use them.',
+  headline: [
+    'Helping the world run\u00a0more\u00a0efficiently,',
+    'so people can work\u00a0more\u00a0effectively',
+  ],
+  introduction: [
+    'Tools and systems can remove unnecessary work.',
+    'Sharing the experience and knowledge behind them helps others understand and use them.',
+  ],
 };
 
 export const approaches = [
   {
-    title: 'Reduce unnecessary effort',
+    title: ['Reduce unnecessary effort'],
     body: 'Identify repetitive tasks and everyday friction, then build tools that leave more time for judgment and creative work.',
   },
   {
-    title: 'Make complexity manageable',
+    title: ['Make complex work', 'clear\u00a0and\u00a0manageable'],
     body: 'Consider products, operations, and infrastructure together, framing each problem around how people actually work.',
   },
   {
-    title: 'Make work easy to carry forward',
+    title: ['Record and share', 'what the work teaches'],
     body: 'Go beyond implementation by documenting the context and sharing lessons that help others make better decisions.',
   },
 ];
@@ -159,7 +164,7 @@ export const projects: Project[] = [
   {
     slug: 'coryose-process',
     group: 'client',
-    title: '고려씰링 Workflow Management',
+    title: '고려씰링 Workflow\u00a0Management',
     eyebrow: 'Workflow management · Built in 2021 · Complete',
     summary: 'Moved a whiteboard-based workflow to the web, centralizing production processes, purchase orders, outsourced work, and individual work records.',
     problem: 'Production processes, purchase orders, outsourced work, and individual work records were managed on a whiteboard.',
@@ -216,7 +221,7 @@ export const projects: Project[] = [
   {
     slug: 'outta-certificates',
     group: 'community',
-    title: 'OUTTA Certificate Management',
+    title: 'OUTTA Certificate\u00a0Management',
     eyebrow: 'Certificate issuance and management',
     summary: 'Developed a web system for issuing and managing completion certificates.',
     problem: 'Certificate issuance and management needed to move to the web.',
@@ -264,7 +269,7 @@ export const projects: Project[] = [
   {
     slug: 'fairtrade',
     group: 'school',
-    title: 'Fair Trade Product Identification',
+    title: 'Fair\u00a0Trade Product\u00a0Identification',
     eyebrow: 'Android · Team of four',
     summary: 'Developed an Android app that scans product barcodes and checks their fair trade certification status.',
     problem: 'The project explored how mobile users could verify whether a product carried fair trade certification.',

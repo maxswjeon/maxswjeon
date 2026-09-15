@@ -6,7 +6,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
   <section class="relative mx-auto grid min-h-[min(52rem,calc(100svh-7rem))] w-[var(--shell)] grid-cols-12 content-center gap-6 overflow-clip py-[clamp(4rem,8vw,8rem)] pb-[clamp(5rem,9vw,8rem)] max-[719px]:min-h-0 max-[719px]:py-[4.5rem] max-[719px]:pb-[5.5rem]">
     <div class="relative z-[2] col-span-11 max-[719px]:col-span-full">
       <p class="mb-[clamp(1.5rem,4vw,3rem)] font-mono text-sm leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase md:text-base max-[719px]:mb-8">404</p>
-      <h1 class="m-0 max-w-[15ch] whitespace-pre-line text-[clamp(3rem,6.5vw,6.25rem)] leading-display font-bold tracking-[-0.055em] break-keep max-[719px]:text-[clamp(3rem,15.4vw,4.8rem)]">페이지를 찾을 수 없습니다.</h1>
+      <h1 class="m-0 max-w-none text-[clamp(2.125rem,10vw,4rem)] leading-display font-bold tracking-[-0.055em] break-keep md:text-[clamp(3rem,5.8vw,5.25rem)]" aria-label="요청한 페이지가 존재하지 않습니다">
+        <span class="block whitespace-nowrap" aria-hidden="true">요청한 페이지가</span>
+        <span class="block whitespace-nowrap" aria-hidden="true">존재하지 않습니다</span>
+      </h1>
       <p class="max-w-[39rem] text-[length:var(--size-body)] leading-copy text-[var(--text-soft)]">주소가 바뀌었거나 페이지가 사라졌을 수 있습니다. 홈에서 다시 시작하거나 작업 목록을 살펴보세요.</p>
       <div class="flex flex-col items-start gap-[1.15rem] print:hidden max-[719px]:flex-row max-[719px]:flex-wrap max-[719px]:items-center">
         <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href="/ko/">홈으로 <span aria-hidden="true">←</span></a>

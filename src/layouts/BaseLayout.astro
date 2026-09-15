@@ -29,6 +29,7 @@ const {
   localized = true,
 } = Astro.props;
 const copy = ui[locale];
+const footerTitleLabel = copy.footerTitle.join(' ');
 const displayName = locale === 'ko' ? site.name : site.englishName;
 const alternateName = locale === 'ko' ? site.englishName : site.name;
 const pageTitle = title ? `${title} :: ${displayName}` : `${displayName} :: Engineer`;
@@ -153,9 +154,12 @@ const bingSiteVerification = import.meta.env.PUBLIC_BING_SITE_VERIFICATION;
     <main id="main-content">
       <slot />
     </main>
-    <footer class="relative mx-auto grid min-h-[34rem] w-[var(--shell)] grid-cols-[minmax(0,2fr)_minmax(14rem,1fr)] items-stretch gap-16 bg-[var(--canvas)] pt-[clamp(4rem,8vw,7rem)] pb-8 text-[var(--text)] print:hidden max-[719px]:min-h-[32rem] max-[719px]:grid-cols-1">
+    <footer class="relative mx-auto grid min-h-[34rem] w-[var(--shell)] grid-cols-[minmax(0,2fr)_minmax(14rem,1fr)] items-stretch gap-16 bg-[var(--canvas)] pt-[clamp(4rem,8vw,7rem)] pb-[clamp(3rem,5vw,5rem)] text-[var(--text)] print:hidden max-[719px]:min-h-[32rem] max-[719px]:grid-cols-1">
       <div class="flex flex-col items-start">
-        <p class="mt-auto mb-8 max-w-[12ch] whitespace-pre-line text-[clamp(2.25rem,4.2vw,4.25rem)] leading-heading font-bold tracking-[-0.045em] max-[719px]:mt-20">{copy.footerTitle}</p>
+        <p class="mt-auto mb-8 max-w-none text-[clamp(2rem,4.2vw,4.25rem)] leading-heading font-bold tracking-[-0.045em] break-keep max-[719px]:mt-20" data-multiline-text>
+          <span class="sr-only">{footerTitleLabel}</span>
+          {copy.footerTitle.map((line) => <span class="block whitespace-nowrap" aria-hidden="true">{line}</span>)}
+        </p>
         <a class="text-[clamp(1rem,2vw,1.35rem)] font-[680] text-[var(--signal)]" href={`mailto:${site.email}`}>{site.email} <span aria-hidden="true">↗</span></a>
       </div>
       <div class="flex flex-col items-end justify-between font-mono text-[length:var(--size-meta)] text-[var(--text-soft)] max-[719px]:items-start max-[719px]:gap-12">
