@@ -31,6 +31,7 @@ read them without access to the protected production environment:
 | --- | --- | --- |
 | `PUBLIC_GA_MEASUREMENT_ID` | no | Google Analytics 4 measurement ID |
 | `PUBLIC_GTM_CONTAINER_ID` | no | Google Tag Manager container ID |
+| `PUBLIC_GOOGLE_TAG_GATEWAY_PATH` | no | Same-origin Google Tag Gateway path, enabled after its CloudFront behavior is healthy |
 | `PUBLIC_CLARITY_PROJECT_ID` | no | Microsoft Clarity project ID |
 | `PUBLIC_NAVER_WCS_ID` | no | Naver WCS account ID |
 | `PUBLIC_KAKAO_PIXEL_ID` | no | Kakao Pixel ID |

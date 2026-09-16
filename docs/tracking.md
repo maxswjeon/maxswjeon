@@ -6,11 +6,40 @@
 | --- | --- | --- |
 | `PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4의 Google tag (`G-…`) | 분석 |
 | `PUBLIC_GTM_CONTAINER_ID` | Google Tag Manager (`GTM-…`) | 분석 또는 마케팅 |
+| `PUBLIC_GOOGLE_TAG_GATEWAY_PATH` | Google Tag Gateway의 same-origin 경로 (`/r8k3p/`) | GTM 보조 설정 |
 | `PUBLIC_CLARITY_PROJECT_ID` | Microsoft Clarity | 분석 |
 | `PUBLIC_NAVER_WCS_ID` | Naver Analytics의 `wa` ID | 분석 |
 | `PUBLIC_KAKAO_PIXEL_ID` | Kakao Pixel Track ID | 마케팅 |
 
 `PUBLIC_GTM_CONTAINER_ID`가 있으면 직접 Google tag는 로드하지 않는다. GA4는 GTM 컨테이너 안에서 구성해야 하며, 두 방식을 함께 구성해서 페이지뷰가 중복되는 일을 피한다. GTM의 각 태그에는 내장 동의 검사를 설정하고, GA4 페이지 위치에는 데이터 레이어의 `tracking_page_location`을 사용한다.
+
+## Google Tag Manager와 Google Tag Gateway
+
+GA4를 GTM으로 운영할 때는 저장소에 `PUBLIC_GTM_CONTAINER_ID`만 설정하고 `PUBLIC_GA_MEASUREMENT_ID`는 비워 둔다. GTM에서 Google tag를 만들고 GA4의 `G-…` 측정 ID를 입력한다. 트리거는 All Pages 대신 `tracking_consent_ready` 맞춤 이벤트를 사용하고, `analytics_storage`가 허용될 때만 실행되도록 추가 동의 검사를 설정한다. `tracking_page_location` 데이터 영역 변수를 Google tag의 `page_location` 구성 매개변수로 전달한다.
+
+Google Tag Gateway를 사용하면 GTM 스크립트와 일부 측정 요청을 `swjeon.kr`의 first-party 경로로 전달할 수 있다. Gateway 경로는 루트가 아니며 사이트에서 사용하지 않는 단일 경로여야 한다. 이 구현은 영문자, 숫자, `_`, `-`로 이루어진 한 구간만 허용하고 끝의 `/`를 자동으로 보완한다. 유효하지 않은 값은 무시하고 표준 Google endpoint를 사용한다.
+
+```env
+PUBLIC_GA_MEASUREMENT_ID=
+PUBLIC_GTM_CONTAINER_ID=GTM-XXXXXXX
+PUBLIC_GOOGLE_TAG_GATEWAY_PATH=/r8k3p/
+```
+
+CloudFront에는 GTM 컨테이너 ID를 소문자로 바꾼 `<gtm-container-id>.fps.goog` custom origin과 Gateway 경로용 behavior를 추가한다. 예를 들어 `GTM-ABC123`의 origin은 `gtm-abc123.fps.goog`다.
+
+| CloudFront 항목 | 값 |
+| --- | --- |
+| Path pattern | `/r8k3p/*` |
+| Origin protocol | HTTPS only |
+| Viewer protocol policy | HTTPS only |
+| Allowed methods | GET, HEAD, OPTIONS, PUT, POST, PATCH, DELETE |
+| Compress objects automatically | No |
+| Cache policy | CachingDisabled |
+| Origin request policy | AllViewerExceptHostHeader |
+
+Gateway behavior를 기본 S3 behavior보다 높은 우선순위에 두고, 사이트 경로를 변환하는 viewer-request CloudFront Function은 연결하지 않는다. 먼저 `/r8k3p/healthy`와 `/r8k3p/?validate_geo=healthy`가 모두 `ok`를 반환하는지 확인한 뒤 `PUBLIC_GOOGLE_TAG_GATEWAY_PATH`를 설정하고 다시 배포한다. [Google Tag Gateway self-service 설정](https://developers.google.com/tag-platform/tag-manager/gateway/setup-guide?setup=manual)
+
+Gateway는 도메인 기반 차단에 대한 내구성을 높일 수 있지만 모든 콘텐츠 차단기를 우회한다고 보장하지 않는다. 방문자 동의와 개인정보 고지 요건도 바뀌지 않는다.
 
 공통 레이아웃에서 `<Tracking />`을 한 번 렌더링한다. 푸터처럼 다른 컴포넌트에서 설정 창을 열려면 버튼이나 링크에 `data-tracking-settings` 속성을 붙인다. 연결된 서비스가 하나도 없을 때도 설정 창은 현재 활성 서비스가 없다고 설명한다.
 

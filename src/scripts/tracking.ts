@@ -9,6 +9,7 @@ export type TrackingConsent = {
 export type TrackingConfig = {
   googleAnalyticsId?: string;
   googleTagManagerId?: string;
+  googleTagGatewayPath?: string;
   clarityProjectId?: string;
   naverAnalyticsId?: string;
   kakaoPixelId?: string;
@@ -33,10 +34,19 @@ const cleanId = (value: string | undefined, pattern: RegExp): string => {
   return pattern.test(id) ? id : '';
 };
 
+export function normalizeGatewayPath(value: string | undefined): string {
+  const path = value?.trim() ?? '';
+  if (!path) return '';
+
+  const normalized = path.endsWith('/') ? path : `${path}/`;
+  return normalized.length <= 100 && /^\/[a-z0-9_-]+\/$/i.test(normalized) ? normalized : '';
+}
+
 export function normalizeTrackingConfig(config: TrackingConfig): NormalizedTrackingConfig {
   return {
     googleAnalyticsId: cleanId(config.googleAnalyticsId, /^G-[A-Z0-9]+$/i),
     googleTagManagerId: cleanId(config.googleTagManagerId, /^GTM-[A-Z0-9]+$/i),
+    googleTagGatewayPath: normalizeGatewayPath(config.googleTagGatewayPath),
     clarityProjectId: cleanId(config.clarityProjectId, /^[a-z0-9]+$/i),
     naverAnalyticsId: cleanId(config.naverAnalyticsId, /^[a-z0-9_-]+$/i),
     kakaoPixelId: cleanId(config.kakaoPixelId, /^\d+$/),
@@ -141,14 +151,22 @@ function loadGoogleAnalytics(id: string, consent: TrackingConsent, pageLocation:
   loadScript('google-tag', `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(id)}`);
 }
 
-function loadGoogleTagManager(id: string, consent: TrackingConsent, pageLocation: string): void {
+function loadGoogleTagManager(
+  id: string,
+  consent: TrackingConsent,
+  pageLocation: string,
+  gatewayPath: string,
+): void {
   const trackingWindow = prepareGoogleConsent(consent);
   trackingWindow.dataLayer?.push({
     event: 'tracking_consent_ready',
     tracking_page_location: pageLocation,
   });
   trackingWindow.dataLayer?.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
-  loadScript('google-tag-manager', `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`);
+  const source = gatewayPath
+    ? `${gatewayPath}?id=${encodeURIComponent(id)}`
+    : `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(id)}`;
+  loadScript('google-tag-manager', source);
 }
 
 function loadClarity(id: string, consent: TrackingConsent): void {
@@ -198,7 +216,12 @@ function activateTracking(config: NormalizedTrackingConfig, consent: TrackingCon
 
   const pageLocation = removeQueryBeforeTracking();
   if (trackers.includes('google-tag-manager')) {
-    loadGoogleTagManager(config.googleTagManagerId, consent, pageLocation);
+    loadGoogleTagManager(
+      config.googleTagManagerId,
+      consent,
+      pageLocation,
+      config.googleTagGatewayPath,
+    );
   } else if (trackers.includes('google-analytics')) {
     loadGoogleAnalytics(config.googleAnalyticsId, consent, pageLocation);
   }
@@ -210,7 +233,10 @@ function activateTracking(config: NormalizedTrackingConfig, consent: TrackingCon
 
 export function initializeTracking(config: TrackingConfig): void {
   const normalized = normalizeTrackingConfig(config);
-  const hasConfiguredServices = Object.values(normalized).some(Boolean);
+  const hasConfiguredServices = enabledTrackers(normalized, {
+    analytics: true,
+    marketing: true,
+  }).length > 0;
 
   const banner = document.querySelector<HTMLElement>('[data-tracking-banner]');
   const dialog = document.querySelector<HTMLDialogElement>('[data-tracking-dialog]');

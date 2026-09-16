@@ -5,6 +5,7 @@ import {
   TRACKING_CONSENT_KEY,
   enabledTrackers,
   initializeTracking,
+  normalizeGatewayPath,
   normalizeTrackingConfig,
   parseStoredConsent,
   safePageUrl,
@@ -165,6 +166,7 @@ test('tracking stays disabled when IDs are missing or malformed', () => {
   const config = normalizeTrackingConfig({
     googleAnalyticsId: '<script>',
     googleTagManagerId: 'not-a-container',
+    googleTagGatewayPath: '//tracker.example/',
     clarityProjectId: 'contains/slash',
     naverAnalyticsId: 'contains space',
     kakaoPixelId: 'not-numeric',
@@ -173,11 +175,20 @@ test('tracking stays disabled when IDs are missing or malformed', () => {
   assert.deepEqual(config, {
     googleAnalyticsId: '',
     googleTagManagerId: '',
+    googleTagGatewayPath: '',
     clarityProjectId: '',
     naverAnalyticsId: '',
     kakaoPixelId: '',
   });
   assert.deepEqual(enabledTrackers(config, { analytics: true, marketing: true }), []);
+});
+
+test('Google Tag Gateway paths stay same-origin and normalize a trailing slash', () => {
+  assert.equal(normalizeGatewayPath('/r8k3p'), '/r8k3p/');
+  assert.equal(normalizeGatewayPath('/r8k3p/'), '/r8k3p/');
+  assert.equal(normalizeGatewayPath('/nested/path/'), '');
+  assert.equal(normalizeGatewayPath('https://tracker.example/'), '');
+  assert.equal(normalizeGatewayPath('/'), '');
 });
 
 test('stored consent requires both explicit boolean categories', () => {
@@ -251,6 +262,7 @@ test('GTM runtime replaces direct GA and marketing-only consent loads no analyti
   initializeTracking({
     googleAnalyticsId: 'G-ABCDEFG123',
     googleTagManagerId: 'GTM-ABC1234',
+    googleTagGatewayPath: '/r8k3p/',
     clarityProjectId: 'clarity123',
     naverAnalyticsId: 'naver_123',
     kakaoPixelId: '1234567890',
@@ -258,6 +270,20 @@ test('GTM runtime replaces direct GA and marketing-only consent loads no analyti
 
   assert.deepEqual([...browser.scripts.keys()], ['google-tag-manager', 'kakao-pixel']);
   assert.equal(browser.scripts.has('google-tag'), false);
+  assert.equal(browser.scripts.get('google-tag-manager').src, '/r8k3p/?id=GTM-ABC1234');
+});
+
+test('GTM falls back to the standard Google endpoint without a gateway path', () => {
+  const browser = installMockBrowser({
+    storedConsent: JSON.stringify({ analytics: true, marketing: false }),
+  });
+
+  initializeTracking({ googleTagManagerId: 'GTM-ABC1234' });
+
+  assert.equal(
+    browser.scripts.get('google-tag-manager').src,
+    'https://www.googletagmanager.com/gtm.js?id=GTM-ABC1234',
+  );
 });
 
 test('settings remain useful with no services, and withdrawal persists before reload', () => {
