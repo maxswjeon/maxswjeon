@@ -121,3 +121,14 @@ test('deployment removes retired pages while retaining excluded fingerprinted as
   assert.match(pageStep, /--exclude '_astro\/\*'/);
   assert.match(pageStep, /--delete/);
 });
+
+test('production deployment runs on main pushes and reuses artifacts across partial reruns', async () => {
+  const workflow = await readFile('.github/workflows/deploy.yml', 'utf8');
+  assert.match(workflow, /push:\s+branches:\s+- main/);
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.equal((workflow.match(/site-\$\{\{ github\.run_id \}\}/g) || []).length, 2);
+  assert.doesNotMatch(workflow, /github\.run_attempt/);
+
+  const uploadStep = workflow.split('- name: Upload static site')[1].split('deploy:')[0];
+  assert.match(uploadStep, /overwrite: true/);
+});

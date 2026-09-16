@@ -1,9 +1,10 @@
 # AWS static deployment
 
-The site builds as static Astro output in `dist/` and is deployed manually by
-the `Deploy production` GitHub Actions workflow. The workflow does not contain
-AWS keys: its deployment job obtains short-lived credentials through GitHub
-OIDC, while the build job has no AWS permission.
+The site builds as static Astro output in `dist/` and is deployed by the
+`Deploy production` GitHub Actions workflow on every push to `main`. The same
+workflow can also be started manually. The workflow does not contain AWS keys:
+its deployment job obtains short-lived credentials through GitHub OIDC, while
+the build job has no AWS permission.
 
 The production canonical origin is `https://swjeon.kr`. `SITE_URL` is fixed to
 that value in CI and deployment so canonical URLs, Open Graph URLs, and the
@@ -96,7 +97,8 @@ map errors to `/index.html` with a 200 response.
 
 ## Release behavior
 
-Run **Actions → Deploy production → Run workflow** from the `main` branch. The
+Pushing to `main` starts production deployment automatically. For a manual
+release, run **Actions → Deploy production → Run workflow** from `main`. The
 workflow checks and builds the source, runs tests, passes `dist/` to an isolated
 deployment job, assumes the environment's AWS role, and uploads in two phases:
 
@@ -104,6 +106,11 @@ deployment job, assumes the environment's AWS role, and uploads in two phases:
 2. HTML, sitemap, robots metadata, images, and other files receive a
    revalidation policy.
 3. CloudFront is invalidated after both uploads complete.
+
+The build artifact is named from `github.run_id`, which remains stable across
+rerun attempts. A failed deploy job can therefore reuse the artifact from the
+original successful build. If all jobs are rerun, the build replaces that same
+artifact before deployment.
 
 The second upload uses `--delete` while excluding `_astro/*`: retired HTML and metadata are removed, and excluded older fingerprinted assets remain available to tabs and cached HTML from the prior release. The destination must be a bucket or prefix exclusively owned by this site; do not target a shared root. Enable S3 versioning for recovery of overwritten or removed pages. Old hashed assets can be cleaned separately after the rollback and client cache window is defined.
 
