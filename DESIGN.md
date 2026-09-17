@@ -82,6 +82,7 @@
 ## Content voice
 
 - Tone: direct, calm, and concrete in both Korean and English; established project and product names remain unchanged across locales.
+- This is a personal site. Use straightforward navigation and contact labels (“소개” / “About me”, “연락하기” / “Get in touch”). Avoid product-discovery prompts such as “Explore the approach” and company-style invitations to build better ways of working together.
 - Terminology: the public identity is “Engineer”; Korean experience headings use bilingual company labels such as “엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니”, “플라네타리움 (나인코퍼레이션)”, and “프로메디우스 (Promedius Inc.)” so the localized name and official brand remain recognizable. Collaboration is “NEXON 플랫폼본부(구 인텔리전스랩스)”.
 - Microcopy rules: lead with the problem and contribution; avoid personal-name self-reference and first-person English sentences; use short declarative headings without terminal periods; use `::` as the document-title separator and avoid em dashes; state limitations beside the relevant claim; do not invent current status, metrics, dates, links, or personal details. External evidence links use the visible page title verified from the destination rather than generic labels such as “관련 보도” or “공개 자료”.
 

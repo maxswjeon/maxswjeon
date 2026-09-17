@@ -1,6 +1,6 @@
 ---
 import Tracking from '../components/Tracking.astro';
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import profileImage from '../assets/profile.jpg';
 import { site } from '../config';
@@ -45,6 +45,7 @@ const localeUrls = localized
     }
   : { ko: getRelativeLocaleUrl('ko'), en: getRelativeLocaleUrl('en') };
 const socialImage = new URL('/og.png', site.url).toString();
+const favicon = await getImage({ src: profileImage, width: 64, height: 64, format: 'png' });
 const currentPath = Astro.url.pathname;
 const aboutActive = currentPath.startsWith(`/${locale}/about`);
 const workActive = currentPath.startsWith(`/${locale}/work`);
@@ -90,7 +91,7 @@ const bingSiteVerification = import.meta.env.PUBLIC_BING_SITE_VERIFICATION;
     {localized && <link rel="alternate" hreflang="ko" href={new URL(localeUrls.ko, site.url)} />}
     {localized && <link rel="alternate" hreflang="en" href={new URL(localeUrls.en, site.url)} />}
     {localized && <link rel="alternate" hreflang="x-default" href={new URL(localeUrls.ko, site.url)} />}
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="64x64" href={favicon.src} />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
     <link rel="preconnect" href="https://naver.github.io" crossorigin />
     <link rel="preload" href="https://naver.github.io/d2-coding-font/fonts/D2Coding-Regular.woff2" as="font" type="font/woff2" crossorigin />

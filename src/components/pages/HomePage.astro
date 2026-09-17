@@ -58,7 +58,7 @@ const workHref = getRelativeLocaleUrl(locale, 'work');
           {purpose.introduction.map((line) => <span class="block">{line}</span>)}
         </p>
         <div class="flex flex-col items-start gap-[1.15rem] max-[719px]:flex-row max-[719px]:flex-wrap max-[719px]:items-center">
-          <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href="#approach">{locale === 'ko' ? '일하는 방식 보기' : 'Explore the approach'} <span aria-hidden="true">↓</span></a>
+          <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={getRelativeLocaleUrl(locale, 'about')}>{locale === 'ko' ? '소개' : 'About me'} <span aria-hidden="true">→</span></a>
           <a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={site.writing} target="_blank" rel="noopener">{locale === 'ko' ? '글 읽기' : 'Read articles'} <span aria-hidden="true">↗</span></a>
         </div>
       </div>

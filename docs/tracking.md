@@ -2,6 +2,20 @@
 
 이 사이트의 측정 스크립트는 정적 빌드 시 `PUBLIC_*` 환경 변수로 켠다. ID를 설정하지 않았거나 형식이 잘못되면 해당 서비스에 대한 스크립트와 네트워크 요청은 생성되지 않는다. 실제 계정 ID는 저장소에 넣지 않는다.
 
+## 동의 전 집계와 동의 후 상세 분석
+
+동의 전에는 CloudFront가 기본 제공하는 전체 **요청 수**를 이용한다. CloudFront 콘솔의 Monitoring에서 배포별 `Requests` 지표를 확인하거나 Usage Reports에서 시간별·일별 집계와 CSV를 확인할 수 있다. 별도 브라우저 스크립트, 쿠키, 방문자 ID, 수집 서버, 액세스 로그 설정은 필요하지 않다. 이 저장소 변경은 운영 AWS 설정을 변경하지 않는다.
+
+`Requests`에는 HTML뿐 아니라 이미지·CSS·JavaScript와 봇의 요청도 포함된다. 따라서 이를 방문자 수, 순 방문자 수, 페이지 조회 수로 표시하거나 환산하지 않는다. Usage Reports는 실시간이 아니며 보통 약 4시간, 드물게 24시간 지연될 수 있다.
+
+페이지별 이용, 유입 경로, 기기 정보, 클릭·스크롤 같은 상세 측정은 아래의 기존 동의 분류를 따른다. 분석·마케팅 도구는 해당 동의 후에만 로드한다. Google의 쿠키 없는 측정 요청도 동의 전에 전송하도록 변경하지 않는다.
+
+기본 집계를 위해 CloudFront 액세스 로그를 추가로 켜지 않는다. 액세스 로그에는 IP 주소, 경로, user-agent, referrer 등 요청별 정보가 포함될 수 있어 집계 지표와 다르다. 브라우저 저장을 사용하지 않는다는 사실만으로 모든 지역의 개인정보 요건을 충족한다고 단정할 수는 없다.
+
+확인한 공식 문서 (2026-09-17): [CloudFront 기본 지표](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html), [Usage Reports](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/usage-charts.html), [액세스 로그 필드](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logs-reference.html), [ICO 저장·접근 기술의 범위](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/what-are-storage-and-access-technologies/).
+
+## 동의 후 측정 서비스
+
 | 환경 변수 | 서비스 | 동의 분류 |
 | --- | --- | --- |
 | `PUBLIC_GA_MEASUREMENT_ID` | Google Analytics 4의 Google tag (`G-…`) | 분석 |

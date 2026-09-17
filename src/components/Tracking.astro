@@ -6,7 +6,7 @@ interface Props { locale?: Locale }
 const { locale = 'ko' } = Astro.props;
 const copy = locale === 'ko' ? {
   title: '방문 데이터 설정',
-  intro: '사이트 개선을 위한 분석과 선택적 마케팅 측정을 허용할 수 있습니다. 선택하기 전에는 추적하지 않습니다.',
+  intro: '사이트 운영을 위한 전체 요청 수는 CloudFront에서 집계합니다. 상세 이용 분석과 마케팅 측정은 동의한 경우에만 시작합니다.',
   settings: '설정',
   reject: '모두 거부',
   accept: '모두 허용',
@@ -23,7 +23,7 @@ const copy = locale === 'ko' ? {
   save: '선택 저장',
 } : {
   title: 'Visitor data settings',
-  intro: 'Choose whether to allow analytics and marketing measurement. Nothing beyond essential functionality is enabled before a choice is made.',
+  intro: 'CloudFront provides aggregate request counts for site operations. Detailed analytics and marketing measurement start only with your consent.',
   settings: 'Settings',
   reject: 'Reject all',
   accept: 'Allow all',

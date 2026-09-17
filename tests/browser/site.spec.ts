@@ -241,7 +241,7 @@ test('serves prefixed Korean and English routes with reciprocal language links a
 test('keeps the English locale readable at mobile and desktop widths', async ({ page }) => {
   for (const width of [360, 1440]) {
     await page.setViewportSize({ width, height: 960 });
-    for (const route of ['/en/', '/en/work/']) {
+    for (const route of ['/en/', '/en/about/', '/en/work/']) {
       await page.goto(route);
       await expect(page.locator('html')).toHaveAttribute('lang', 'en');
       await expect(page.locator('h1')).toBeVisible();
@@ -288,12 +288,12 @@ test('keeps major Korean headings on semantic, visually balanced lines', async (
   await expect(page.locator('#approach ol > li').nth(2).locator('h3')).toHaveAttribute('aria-label', '배운 것을 기록하고 나눕니다');
   await expect(page.locator('#selected-title')).toHaveAttribute('aria-label', '생각은 시스템이 되어 실제로 작동합니다');
   await expect(page.locator('#writing-title')).toHaveAttribute('aria-label', '배운 것을 설명하며 다시 이해합니다');
-  await expect(page.locator('footer p[data-multiline-text] > .sr-only')).toHaveText('함께 더 나은 일의 방식을 만들어요');
+  await expect(page.locator('footer p[data-multiline-text] > .sr-only')).toHaveText('연락하기');
   await expect(page.locator('[data-purpose-introduction] > span')).toHaveText([
     '불필요한 수고를 줄이는 도구와 시스템을 만듭니다.',
     '만든 도구와 시스템을 다른 사람도 이해하고 활용할 수 있도록 경험과 지식을 나눕니다.',
   ]);
-  await expect(page.getByRole('link', { name: '일하는 방식 보기' })).toHaveAttribute('href', '#approach');
+  await expect(page.getByRole('link', { name: '소개', exact: true })).toHaveAttribute('href', '/ko/about/');
   const introductionLineTops = await page.locator('[data-purpose-introduction] > span').evaluateAll(elements =>
     elements.map(element => Math.round(element.getBoundingClientRect().top)),
   );

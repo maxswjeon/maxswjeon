@@ -8,8 +8,9 @@ const { locale } = Astro.props;
 const copy = locale === 'ko' ? {
   description: 'swjeon.kr의 선택적 방문 분석과 추적 설정 안내입니다.',
   heading: '방문 분석과 선택권',
-  intro: '사이트를 개선하는 데 필요한 경우 선택적 방문 분석 도구를 사용할 수 있습니다. 필수 기능 이외의 추적 여부는 방문자가 선택합니다.',
+  intro: '사이트 운영을 위한 전체 요청 수와 선택적 이용 분석을 구분합니다. 상세 이용 분석과 마케팅 측정은 동의한 경우에만 시작합니다.',
   essential: '필수 기능은 페이지 제공과 추적 설정 저장에 사용됩니다.',
+  traffic: 'CloudFront는 동의 여부와 관계없이 사이트에 들어온 전체 요청 수를 집계합니다. 이 통계를 위해 브라우저에 추적 정보를 저장하거나 추가 측정 스크립트를 실행하지 않습니다. 이미지 요청과 봇의 요청도 포함되므로 방문자 수나 페이지 조회 수와는 다릅니다.',
   analytics: '분석은 방문한 페이지, 유입 경로, 기기·브라우저 같은 사용 정보를 집계해 사이트 개선에 활용할 수 있습니다.',
   interaction: '분석에 동의하면 Microsoft Clarity가 클릭·스크롤과 같은 상호작용을 기록할 수 있습니다. 마케팅은 Kakao Pixel과 Google 광고 측정에 사용됩니다.',
   unavailable: '설정되지 않은 서비스나 식별자는 로드되지 않습니다. 분석과 마케팅 동의를 각각 선택할 수 있습니다.',
@@ -20,8 +21,9 @@ const copy = locale === 'ko' ? {
 } : {
   description: 'How optional analytics work on swjeon.kr and how to manage tracking preferences.',
   heading: 'Your data, your choices',
-  intro: 'This site uses optional analytics only to support improvements. Nothing beyond essential functionality is enabled without consent.',
+  intro: 'Aggregate traffic counts are separate from optional usage analytics. Detailed analytics and marketing measurement start only with your consent.',
   essential: 'Essential functions deliver the site and save your tracking preferences.',
+  traffic: 'CloudFront provides aggregate request counts regardless of your consent choice. These counts require no browser tracking storage or additional measurement scripts. They include requests for assets and requests from bots, so they are not visitor counts or pageviews.',
   analytics: 'Analytics may collect aggregate information about visited pages, referrers, devices, and browsers to improve the site.',
   interaction: 'With analytics enabled, Microsoft Clarity may record interactions such as clicks and scrolling. Marketing consent covers Kakao Pixel and Google Ads measurement.',
   unavailable: 'Services without a configured identifier are never loaded. Analytics and marketing preferences can be managed independently.',
@@ -43,6 +45,7 @@ const breadcrumbs = [{ name: 'Home', path: `/${locale}/` }, { name: 'Privacy', p
     <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="categories">Categories</h2>
     <div class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">
       <p class="mt-0"><strong>{locale === 'ko' ? '필수 기능' : 'Essential functions'}</strong>{copy.essential.replace(locale === 'ko' ? '필수 기능' : 'Essential functions', '')}</p>
+      <p>{copy.traffic}</p>
       <p><strong>{locale === 'ko' ? '분석' : 'Analytics'}</strong>{copy.analytics.replace(locale === 'ko' ? '분석' : 'Analytics', '')}</p>
       <p>{copy.interaction}</p>
       <p>{copy.unavailable}</p>
