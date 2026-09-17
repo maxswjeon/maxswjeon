@@ -52,43 +52,22 @@ Origin Access Control. Keep S3 Block Public Access enabled. Give the OIDC role
 only the deployment permissions it needs:
 
 - `s3:ListBucket` on the deployment bucket;
-- `s3:PutObject` and `s3:DeleteObject` on the exclusively owned deployed prefix;
-- `cloudfront:CreateFunction` on `*` (this action does not support a
-  resource-level ARN);
+- `s3:PutObject` on the exclusively owned deployed prefix;
 - `cloudfront:DescribeFunction`, `cloudfront:UpdateFunction`, and
   `cloudfront:PublishFunction` on
   `arn:aws:cloudfront::025383730468:function/prd-swjeon-website-router`;
-- `cloudfront:GetDistribution`, `cloudfront:GetDistributionConfig`,
-  `cloudfront:UpdateDistribution`, and `cloudfront:CreateInvalidation` on
+- `cloudfront:CreateInvalidation` on
   `arn:aws:cloudfront::025383730468:distribution/E35RRMPHYCD2X9`.
 
-For the current `swjeon-website` bucket and CloudFront distribution, the role's
-permissions policy can use these statements:
+Keep the existing `prd_swjeon-website@s3+write` and
+`prd_swjeon.kr@cloudfront+invalidate` policies attached. Add a managed policy
+named `prd_swjeon.kr@cloudfront+deploy` with this document:
 
 ```json
 {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "ListSiteBucket",
-      "Effect": "Allow",
-      "Action": "s3:ListBucket",
-      "Resource": "arn:aws:s3:::swjeon-website"
-    },
-    {
-      "Sid": "WriteSiteObjects",
-      "Effect": "Allow",
-      "Action": ["s3:PutObject", "s3:DeleteObject"],
-      "Resource": "arn:aws:s3:::swjeon-website/*"
-    },
-    {
-      "Sid": "CreateSiteRouterFunction",
-      "Effect": "Allow",
-      "Action": "cloudfront:CreateFunction",
-      "Resource": "*"
-    },
-    {
-      "Sid": "ManageSiteRouterFunction",
       "Effect": "Allow",
       "Action": [
         "cloudfront:DescribeFunction",
@@ -96,21 +75,16 @@ permissions policy can use these statements:
         "cloudfront:PublishFunction"
       ],
       "Resource": "arn:aws:cloudfront::025383730468:function/prd-swjeon-website-router"
-    },
-    {
-      "Sid": "DeploySiteDistribution",
-      "Effect": "Allow",
-      "Action": [
-        "cloudfront:GetDistribution",
-        "cloudfront:GetDistributionConfig",
-        "cloudfront:UpdateDistribution",
-        "cloudfront:CreateInvalidation"
-      ],
-      "Resource": "arn:aws:cloudfront::025383730468:distribution/E35RRMPHYCD2X9"
     }
   ]
 }
 ```
+
+The role intentionally has no `cloudfront:CreateFunction`,
+`cloudfront:UpdateDistribution`, or `s3:DeleteObject` permission. Provision and
+associate the function before the first CI release. A missing function fails
+the deployment; its distribution binding is an infrastructure precondition
+managed outside CI and is not read or changed by the workflow.
 
 The role trust policy should accept the GitHub OIDC provider
 `token.actions.githubusercontent.com`, require audience `sts.amazonaws.com`,
@@ -146,12 +120,12 @@ locales, verifies every localized destination, and injects that route data into
 `dist/cloudfront-viewer-request.js` travels with the build artifact but is
 excluded from the S3 uploads.
 
-CI creates or updates that generated file as the
-`prd-swjeon-website-router` CloudFront Function using the `cloudfront-js-2.0`
-runtime, publishes it, and associates it with the default behavior's **Viewer
-request** event when the association is missing. The deployment fails instead
-of replacing an unexpected viewer-request function. The `/r8k3p/*` Google Tag
-Gateway behavior remains unassociated and is not changed by the workflow.
+CI updates the existing `prd-swjeon-website-router` CloudFront Function using
+the `cloudfront-js-2.0` runtime and publishes it. The function must already be
+associated with the default behavior's **Viewer request** event. CI neither
+creates the function nor reads or changes the distribution configuration. The
+`/r8k3p/*` Google Tag Gateway behavior remains unassociated and is not changed
+by the workflow.
 
 The function temporarily redirects unprefixed public URLs to `/ko/` or `/en/`
 from the request's supported `Accept-Language` preferences, then maps localized
@@ -173,8 +147,7 @@ deployment job, assumes the environment's AWS role, deploys the CloudFront
 viewer-request function, and uploads in two phases:
 
 1. Astro's generated redirect pages are converted into the router function;
-   the function is updated and published. If necessary, it is associated with
-   the default cache behavior and CI waits for the distribution update.
+   the existing function is updated and published without changing its binding.
 2. `_astro/` fingerprinted assets receive a one-year immutable cache policy.
 3. HTML, sitemap, robots metadata, images, and other files receive a
    revalidation policy.
@@ -185,7 +158,13 @@ rerun attempts. A failed deploy job can therefore reuse the artifact from the
 original successful build. If all jobs are rerun, the build replaces that same
 artifact before deployment.
 
-The second upload uses `--delete` while excluding `_astro/*`: retired HTML and metadata are removed, and excluded older fingerprinted assets remain available to tabs and cached HTML from the prior release. The destination must be a bucket or prefix exclusively owned by this site; do not target a shared root. Enable S3 versioning for recovery of overwritten or removed pages. Old hashed assets can be cleaned separately after the rollback and client cache window is defined.
+Neither upload uses `--delete`. Existing page and metadata keys are updated in
+place, while prior fingerprinted assets and objects at retired paths remain
+available. An older document can therefore continue loading the chunks it
+references. Clean retired objects only through a separate, deliberate retention
+process after the rollback and client cache window is defined. The destination
+must still be a bucket or prefix exclusively owned by this site, and S3
+versioning should remain enabled for recovery of overwritten objects.
 
 Browser end-to-end tests stay outside these workflows. CI runs the repository's
 `pnpm run check`, `pnpm run build`, and `pnpm test` commands; `pnpm test` is the
@@ -213,8 +192,6 @@ notes and keep the SHA comment paired with the verified tag.
 
 Legacy project paths and unprefixed public paths receive language-negotiated HTTP 302 redirects in the CloudFront Function. Keep the legacy alias map aligned with `legacyProjectAliases` in public content. Redirects preserve query parameters, and localized pages remain the canonical URLs.
 
-After deployment, submit `/sitemap.xml` to Google Search Console, Naver Search Advisor, and Bing Webmaster Tools. Verify a nested page returns HTTP 200 and unique rendered metadata, an unknown page returns HTTP 404, and unprefixed or alias routes return a language-aware HTTP 302. Set CloudFront cache policy minimum TTL to 0 so page revalidation headers take effect. Configure an HTTPS response headers policy. Retired non-hashed objects are removed automatically; excluded `_astro/` objects are retained.
-
-AWS explicitly excludes filtered objects from deletion during `sync --delete`; see the [official CLI reference](https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html) and [filtered deletion example](https://docs.aws.amazon.com/cli/latest/userguide/cli-services-s3-commands.html). Local verification checks that the release command retains this `_astro/*` exclusion; no remote deletion was executed during implementation.
+After deployment, submit `/sitemap.xml` to Google Search Console, Naver Search Advisor, and Bing Webmaster Tools. Verify a nested page returns HTTP 200 and unique rendered metadata, an unknown page returns HTTP 404, and unprefixed or alias routes return a language-aware HTTP 302. Set CloudFront cache policy minimum TTL to 0 so page revalidation headers take effect. Configure an HTTPS response headers policy. CI retains retired objects; review and remove them only through the separate retention process.
 
 Both workflows install the pnpm version pinned in `package.json` before Node’s pnpm cache setup, then use `pnpm install --frozen-lockfile`. `pnpm-workspace.yaml` allows only esbuild’s required dependency install script.

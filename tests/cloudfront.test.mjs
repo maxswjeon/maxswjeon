@@ -129,14 +129,15 @@ test('generated function mirrors every language redirect in the Astro build', as
   }
 });
 
-test('deployment removes retired pages while retaining excluded fingerprinted assets', async () => {
+test('deployment retains previously published pages and fingerprinted assets', async () => {
   const workflow = await readFile('.github/workflows/deploy.yml', 'utf8');
   const assetStep = workflow.split('- name: Upload immutable assets')[1].split('- name: Upload pages and metadata')[0];
   const pageStep = workflow.split('- name: Upload pages and metadata')[1].split('- name: Invalidate CloudFront')[0];
   assert.doesNotMatch(assetStep, /--delete/);
   assert.match(pageStep, /--exclude '_astro\/\*'/);
   assert.match(pageStep, /--exclude 'cloudfront-viewer-request\.js'/);
-  assert.match(pageStep, /--delete/);
+  assert.doesNotMatch(pageStep, /--delete/);
+  assert.doesNotMatch(workflow, /s3\s+(?:sync|rm)[\s\S]*--delete/);
 });
 
 test('production deployment runs on main pushes and reuses artifacts across partial reruns', async () => {
@@ -150,7 +151,7 @@ test('production deployment runs on main pushes and reuses artifacts across part
   assert.match(uploadStep, /overwrite: true/);
 });
 
-test('production deployment publishes and safely associates the viewer request function', async () => {
+test('production deployment only updates and publishes the pre-provisioned viewer request function', async () => {
   const workflow = await readFile('.github/workflows/deploy.yml', 'utf8');
   const functionStep = workflow
     .split('- name: Deploy CloudFront viewer request function')[1]
@@ -159,14 +160,12 @@ test('production deployment publishes and safely associates the viewer request f
   assert.equal((workflow.match(/uses: actions\/checkout@/g) || []).length, 1);
   assert.match(functionStep, /prd-swjeon-website-router/);
   assert.match(functionStep, /dist\/cloudfront-viewer-request\.js/);
-  assert.match(functionStep, /cloudfront create-function/);
+  assert.match(functionStep, /cloudfront describe-function/);
   assert.match(functionStep, /cloudfront update-function/);
   assert.match(functionStep, /cloudfront publish-function/);
-  assert.match(functionStep, /cloudfront get-distribution-config/);
-  assert.match(functionStep, /select\(\.EventType == "viewer-request"\)/);
-  assert.match(functionStep, /already has another viewer-request function/);
-  assert.match(functionStep, /cloudfront update-distribution/);
-  assert.match(functionStep, /cloudfront wait distribution-deployed/);
+  assert.doesNotMatch(functionStep, /cloudfront create-function/);
+  assert.doesNotMatch(functionStep, /cloudfront (?:get|update)-distribution/);
+  assert.doesNotMatch(functionStep, /cloudfront wait distribution-deployed/);
 });
 
 test('the build generates route data instead of keeping it in the function template', async () => {

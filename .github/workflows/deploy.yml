@@ -82,7 +82,7 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     environment: production
     permissions:
       contents: read
@@ -128,83 +128,30 @@ jobs:
 
       - name: Deploy CloudFront viewer request function
         env:
-          CLOUDFRONT_DISTRIBUTION_ID: ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}
           CLOUDFRONT_FUNCTION_NAME: prd-swjeon-website-router
         run: |
           set -euo pipefail
 
-          work_dir="$(mktemp -d)"
-          trap 'rm -rf "$work_dir"' EXIT
-
           function_config='{"Comment":"Routes localized Astro pages and legacy URLs","Runtime":"cloudfront-js-2.0"}'
 
-          if aws cloudfront describe-function \
+          function_etag="$(aws cloudfront describe-function \
             --name "$CLOUDFRONT_FUNCTION_NAME" \
             --stage DEVELOPMENT \
-            > "$work_dir/function.json" 2> "$work_dir/function-error.log"; then
-            function_etag="$(jq -r '.ETag' "$work_dir/function.json")"
-            published_etag="$(aws cloudfront update-function \
-              --name "$CLOUDFRONT_FUNCTION_NAME" \
-              --if-match "$function_etag" \
-              --function-config "$function_config" \
-              --function-code fileb://dist/cloudfront-viewer-request.js \
-              --query ETag \
-              --output text)"
-          else
-            published_etag="$(aws cloudfront create-function \
-              --name "$CLOUDFRONT_FUNCTION_NAME" \
-              --function-config "$function_config" \
-              --function-code fileb://dist/cloudfront-viewer-request.js \
-              --query ETag \
-              --output text)"
-          fi
+            --query ETag \
+            --output text)"
+
+          published_etag="$(aws cloudfront update-function \
+            --name "$CLOUDFRONT_FUNCTION_NAME" \
+            --if-match "$function_etag" \
+            --function-config "$function_config" \
+            --function-code fileb://dist/cloudfront-viewer-request.js \
+            --query ETag \
+            --output text)"
 
           aws cloudfront publish-function \
             --name "$CLOUDFRONT_FUNCTION_NAME" \
             --if-match "$published_etag" \
             > /dev/null
-
-          function_arn="$(aws cloudfront describe-function \
-            --name "$CLOUDFRONT_FUNCTION_NAME" \
-            --stage LIVE \
-            --query 'FunctionSummary.FunctionMetadata.FunctionARN' \
-            --output text)"
-
-          aws cloudfront get-distribution-config \
-            --id "$CLOUDFRONT_DISTRIBUTION_ID" \
-            > "$work_dir/distribution.json"
-
-          distribution_etag="$(jq -r '.ETag' "$work_dir/distribution.json")"
-          current_function_arn="$(jq -r \
-            '[.DistributionConfig.DefaultCacheBehavior.FunctionAssociations.Items[]? | select(.EventType == "viewer-request")][0].FunctionARN // empty' \
-            "$work_dir/distribution.json")"
-
-          if [ -n "$current_function_arn" ] && [ "$current_function_arn" != "$function_arn" ]; then
-            echo "::error::The default behavior already has another viewer-request function: $current_function_arn"
-            exit 1
-          fi
-
-          if [ "$current_function_arn" != "$function_arn" ]; then
-            jq --arg function_arn "$function_arn" '
-              .DistributionConfig
-              | .DefaultCacheBehavior.FunctionAssociations.Items =
-                  ((.DefaultCacheBehavior.FunctionAssociations.Items // []) + [{
-                    "EventType": "viewer-request",
-                    "FunctionARN": $function_arn
-                  }])
-              | .DefaultCacheBehavior.FunctionAssociations.Quantity =
-                  (.DefaultCacheBehavior.FunctionAssociations.Items | length)
-            ' "$work_dir/distribution.json" > "$work_dir/distribution-update.json"
-
-            aws cloudfront update-distribution \
-              --id "$CLOUDFRONT_DISTRIBUTION_ID" \
-              --if-match "$distribution_etag" \
-              --distribution-config "file://$work_dir/distribution-update.json" \
-              > /dev/null
-
-            aws cloudfront wait distribution-deployed \
-              --id "$CLOUDFRONT_DISTRIBUTION_ID"
-          fi
 
       # Keep prior fingerprinted assets so HTML already open in a browser can
       # still load its chunks while the new release becomes visible.
@@ -226,7 +173,6 @@ jobs:
           aws s3 sync dist/ "s3://$S3_BUCKET/" \
             --exclude '_astro/*' \
             --exclude 'cloudfront-viewer-request.js' \
-            --delete \
             --cache-control 'public, max-age=0, must-revalidate'
 
       - name: Invalidate CloudFront
