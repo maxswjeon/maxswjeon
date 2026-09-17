@@ -18,9 +18,9 @@ SEO includes rendered page content, unique titles/descriptions, self-canonical U
 
 ## Operating boundaries
 
-No production deployment, DNS change, analytics account creation, remote repository mutation, or blog migration occurred. AWS role/bucket/distribution variables and real analytics IDs remain unset. The writing site's canonical URL was verified from live HTML as `https://www.swjeon.dev/`; its deployment source was not conclusively identified, so it is linked without modification. The private `maxswjeon/portfolio` repository was confirmed to use `develop` and the previous React/Vite stack.
+The production deployment and tracking configuration now exist. This implementation pass did not mutate AWS, DNS, analytics accounts, the remote repository, or the writing site. The writing site's canonical URL was verified from live HTML as `https://www.swjeon.dev/`; its deployment source was not conclusively identified, so it is linked without modification. The private `maxswjeon/portfolio` repository was confirmed to use `develop` and the previous React/Vite stack.
 
-Public pages live under `/ko/` and `/en/`. The root, old unprefixed routes, and legacy aliases select Korean or English from browser language in local Astro preview and from `Accept-Language` in the supplied CloudFront function. The edge function still requires deployment and a custom error response preserving HTTP 404, as documented in `deployment.md`.
+Public pages live under `/ko/` and `/en/`. The root, old unprefixed routes, and legacy aliases select Korean or English from browser language in local Astro preview and from `Accept-Language` in the CloudFront function. The build derives the function's locales and redirect map from Astro's static output instead of maintaining a second route list. Production CI creates or updates and publishes that generated function, then safely associates it with the default cache behavior. The custom CloudFront error response preserving HTTP 404 remains an AWS configuration step documented in `deployment.md`.
 
 Final review fixes preserve all eight handoff legacy identifiers at the CloudFront edge. They point to localized project detail pages or Experience anchors, and release configuration removes retired HTML while retaining excluded hashed assets. Alias parity and destinations are verified in the Node suite.
 

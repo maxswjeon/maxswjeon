@@ -1,11 +1,11 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
+import { join, relative, sep } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
-import { legacyProjectAliases } from '../src/content/public.ts';
 
 const source = await readFile(
-  new URL('../deployment/cloudfront-viewer-request.js', import.meta.url),
+  new URL('../dist/cloudfront-viewer-request.js', import.meta.url),
   'utf8',
 );
 const context = vm.createContext({});
@@ -19,6 +19,13 @@ const requestFor = (uri, acceptLanguage, querystring) => ({
   },
 });
 const route = (uri) => context.handler(requestFor(uri)).uri;
+
+async function files(directory) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  return (await Promise.all(entries.map((entry) => entry.isDirectory()
+    ? files(join(directory, entry.name))
+    : [join(directory, entry.name)]))).flat();
+}
 
 test('maps Astro directory routes to their generated index documents', () => {
   assert.equal(route('/ko'), '/ko/index.html');
@@ -99,17 +106,26 @@ test('unprefixed public routes redirect according to the preferred supported lan
   );
 });
 
+test('generated function mirrors every language redirect in the Astro build', async () => {
+  const redirects = [];
+  for (const file of (await files('dist')).filter((path) => path.endsWith('.html'))) {
+    const html = await readFile(file, 'utf8');
+    const destination = html.match(/<meta http-equiv="refresh" content="0;url=([^"]+)"/)?.[1];
+    if (!destination) continue;
+    const builtPath = relative('dist', file).split(sep).join('/');
+    const uri = builtPath === 'index.html' ? '/' : `/${builtPath.replace(/index\.html$/, '')}`;
+    redirects.push({ uri, destination });
+  }
 
-test('every public legacy fallback has the same temporary edge redirect and an existing destination', async () => {
-  for (const [legacy, destination] of Object.entries(legacyProjectAliases)) {
-    for (const uri of [`/${legacy}`, `/${legacy}/`]) {
-      const response = context.handler({ request: { uri } });
-      assert.equal(response.statusCode, 302, uri);
-      assert.equal(response.headers.location.value, destination, uri);
+  assert.ok(redirects.length > 10, 'Astro should produce the public and legacy redirect routes');
+  for (const { uri, destination } of redirects) {
+    for (const requestUri of uri === '/' ? ['/'] : [uri, uri.replace(/\/$/, '')]) {
+      const response = context.handler(requestFor(requestUri));
+      assert.equal(response.statusCode, 302, requestUri);
+      assert.equal(response.headers.location.value, destination, requestUri);
     }
-    const [path, anchor] = destination.split('#');
-    const html = await readFile(`dist${path}index.html`, 'utf8');
-    if (anchor) assert.ok(html.includes(`id="${anchor}"`), destination);
+    const english = context.handler(requestFor(uri, 'en-US'));
+    assert.equal(english.headers.location.value, destination.replace(/^\/ko\//, '/en/'), uri);
   }
 });
 
@@ -119,6 +135,7 @@ test('deployment removes retired pages while retaining excluded fingerprinted as
   const pageStep = workflow.split('- name: Upload pages and metadata')[1].split('- name: Invalidate CloudFront')[0];
   assert.doesNotMatch(assetStep, /--delete/);
   assert.match(pageStep, /--exclude '_astro\/\*'/);
+  assert.match(pageStep, /--exclude 'cloudfront-viewer-request\.js'/);
   assert.match(pageStep, /--delete/);
 });
 
@@ -131,4 +148,38 @@ test('production deployment runs on main pushes and reuses artifacts across part
 
   const uploadStep = workflow.split('- name: Upload static site')[1].split('deploy:')[0];
   assert.match(uploadStep, /overwrite: true/);
+});
+
+test('production deployment publishes and safely associates the viewer request function', async () => {
+  const workflow = await readFile('.github/workflows/deploy.yml', 'utf8');
+  const functionStep = workflow
+    .split('- name: Deploy CloudFront viewer request function')[1]
+    .split('# Keep prior fingerprinted assets')[0];
+
+  assert.equal((workflow.match(/uses: actions\/checkout@/g) || []).length, 1);
+  assert.match(functionStep, /prd-swjeon-website-router/);
+  assert.match(functionStep, /dist\/cloudfront-viewer-request\.js/);
+  assert.match(functionStep, /cloudfront create-function/);
+  assert.match(functionStep, /cloudfront update-function/);
+  assert.match(functionStep, /cloudfront publish-function/);
+  assert.match(functionStep, /cloudfront get-distribution-config/);
+  assert.match(functionStep, /select\(\.EventType == "viewer-request"\)/);
+  assert.match(functionStep, /already has another viewer-request function/);
+  assert.match(functionStep, /cloudfront update-distribution/);
+  assert.match(functionStep, /cloudfront wait distribution-deployed/);
+});
+
+test('the build generates route data instead of keeping it in the function template', async () => {
+  const template = await readFile('deployment/cloudfront-viewer-request.template.js', 'utf8');
+  const generator = await readFile('scripts/generate-cloudfront-function.mjs', 'utf8');
+  const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
+
+  assert.match(packageJson.scripts.build, /generate-cloudfront-function\.mjs/);
+  assert.match(template, /__SUPPORTED_LOCALES__/);
+  assert.match(template, /__DEFAULT_LOCALE__/);
+  assert.match(template, /__REDIRECTS__/);
+  assert.doesNotMatch(template, /online-judge|work\/blis|\/about/);
+  assert.match(generator, /redirectDestination/);
+  assert.match(generator, /routeFromFile/);
+  assert.doesNotMatch(source, /__[A-Z_]+__/);
 });

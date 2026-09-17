@@ -53,7 +53,64 @@ only the deployment permissions it needs:
 
 - `s3:ListBucket` on the deployment bucket;
 - `s3:PutObject` and `s3:DeleteObject` on the exclusively owned deployed prefix;
-- `cloudfront:CreateInvalidation` on the production distribution.
+- `cloudfront:CreateFunction` on `*` (this action does not support a
+  resource-level ARN);
+- `cloudfront:DescribeFunction`, `cloudfront:UpdateFunction`, and
+  `cloudfront:PublishFunction` on
+  `arn:aws:cloudfront::025383730468:function/prd-swjeon-website-router`;
+- `cloudfront:GetDistribution`, `cloudfront:GetDistributionConfig`,
+  `cloudfront:UpdateDistribution`, and `cloudfront:CreateInvalidation` on
+  `arn:aws:cloudfront::025383730468:distribution/E35RRMPHYCD2X9`.
+
+For the current `swjeon-website` bucket and CloudFront distribution, the role's
+permissions policy can use these statements:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ListSiteBucket",
+      "Effect": "Allow",
+      "Action": "s3:ListBucket",
+      "Resource": "arn:aws:s3:::swjeon-website"
+    },
+    {
+      "Sid": "WriteSiteObjects",
+      "Effect": "Allow",
+      "Action": ["s3:PutObject", "s3:DeleteObject"],
+      "Resource": "arn:aws:s3:::swjeon-website/*"
+    },
+    {
+      "Sid": "CreateSiteRouterFunction",
+      "Effect": "Allow",
+      "Action": "cloudfront:CreateFunction",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ManageSiteRouterFunction",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:DescribeFunction",
+        "cloudfront:UpdateFunction",
+        "cloudfront:PublishFunction"
+      ],
+      "Resource": "arn:aws:cloudfront::025383730468:function/prd-swjeon-website-router"
+    },
+    {
+      "Sid": "DeploySiteDistribution",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:CreateInvalidation"
+      ],
+      "Resource": "arn:aws:cloudfront::025383730468:distribution/E35RRMPHYCD2X9"
+    }
+  ]
+}
+```
 
 The role trust policy should accept the GitHub OIDC provider
 `token.actions.githubusercontent.com`, require audience `sts.amazonaws.com`,
@@ -82,14 +139,26 @@ distribution only when the reviewed site is ready to replace the current one.
 
 ## Extensionless routes and real 404 responses
 
-Publish `deployment/cloudfront-viewer-request.js` as a CloudFront Function using
-the `cloudfront-js-2.0` runtime, then associate it with the default behavior's
-**Viewer request** event. It temporarily redirects unprefixed public URLs to
-`/ko/` or `/en/` from the request's supported `Accept-Language` preferences,
-then maps localized routes such as `/en/about` and `/en/about/` to
-`/en/about/index.html`; requests with a filename extension
-are left unchanged. Because it does not rewrite every request to the home page,
-unknown routes still request a missing S3 object and preserve a real 404.
+After Astro builds the site, `scripts/generate-cloudfront-function.mjs` reads
+the language redirect pages in `dist/`, infers the supported and default
+locales, verifies every localized destination, and injects that route data into
+`deployment/cloudfront-viewer-request.template.js`. The generated
+`dist/cloudfront-viewer-request.js` travels with the build artifact but is
+excluded from the S3 uploads.
+
+CI creates or updates that generated file as the
+`prd-swjeon-website-router` CloudFront Function using the `cloudfront-js-2.0`
+runtime, publishes it, and associates it with the default behavior's **Viewer
+request** event when the association is missing. The deployment fails instead
+of replacing an unexpected viewer-request function. The `/r8k3p/*` Google Tag
+Gateway behavior remains unassociated and is not changed by the workflow.
+
+The function temporarily redirects unprefixed public URLs to `/ko/` or `/en/`
+from the request's supported `Accept-Language` preferences, then maps localized
+routes such as `/en/about` and `/en/about/` to `/en/about/index.html`; requests
+with a filename extension are left unchanged. Because it does not rewrite every
+request to the home page, unknown routes still request a missing S3 object and
+preserve a real 404.
 
 Configure CloudFront custom error responses for the private S3 origin so 403
 and 404 origin misses return `/404.html` with HTTP response code `404`. Do not
@@ -100,12 +169,16 @@ map errors to `/index.html` with a 200 response.
 Pushing to `main` starts production deployment automatically. For a manual
 release, run **Actions → Deploy production → Run workflow** from `main`. The
 workflow checks and builds the source, runs tests, passes `dist/` to an isolated
-deployment job, assumes the environment's AWS role, and uploads in two phases:
+deployment job, assumes the environment's AWS role, deploys the CloudFront
+viewer-request function, and uploads in two phases:
 
-1. `_astro/` fingerprinted assets receive a one-year immutable cache policy.
-2. HTML, sitemap, robots metadata, images, and other files receive a
+1. Astro's generated redirect pages are converted into the router function;
+   the function is updated and published. If necessary, it is associated with
+   the default cache behavior and CI waits for the distribution update.
+2. `_astro/` fingerprinted assets receive a one-year immutable cache policy.
+3. HTML, sitemap, robots metadata, images, and other files receive a
    revalidation policy.
-3. CloudFront is invalidated after both uploads complete.
+4. CloudFront is invalidated after both uploads complete.
 
 The build artifact is named from `github.run_id`, which remains stable across
 rerun attempts. A failed deploy job can therefore reuse the artifact from the
