@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Entry from '../ui/Entry.astro';
+import PageHead from '../ui/PageHead.astro';
 import { site } from '../../config';
 import type { Locale } from '../../i18n';
 
@@ -33,33 +35,35 @@ const copy = locale === 'ko' ? {
   contactEnd: '.',
 };
 const breadcrumbs = [{ name: 'Home', path: `/${locale}/` }, { name: 'Privacy', path: `/${locale}/privacy/` }];
+const labels = locale === 'ko'
+  ? { categories: '수집 범위', control: '선택과 철회', contact: '문의', essential: '필수 기능', analytics: '분석' }
+  : { categories: 'What is collected', control: 'Your choices', contact: 'Contact', essential: 'Essential functions', analytics: 'Analytics' };
+const label = 'text-label font-bold text-ink';
 ---
 
 <BaseLayout title="Privacy" description={copy.description} pathname={`/${locale}/privacy/`} {breadcrumbs} {locale}>
-  <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:pt-18 max-[719px]:pb-24">
-    <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[length:var(--size-meta)] font-bold tracking-[0.04em] text-[var(--signal)] uppercase">Privacy</p>
-    <h1 class="m-0 max-w-[15em] text-balance text-[clamp(2.75rem,12vw,4rem)] leading-display font-bold tracking-[-0.055em] break-keep md:text-[clamp(3rem,5.8vw,5.25rem)]">{copy.heading}</h1>
-    <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[length:var(--size-body)] leading-copy text-[var(--text-soft)] max-[719px]:ml-0">{copy.intro}</p>
-  </header>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="categories">
-    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="categories">Categories</h2>
-    <div class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">
-      <p class="mt-0"><strong>{locale === 'ko' ? '필수 기능' : 'Essential functions'}</strong>{copy.essential.replace(locale === 'ko' ? '필수 기능' : 'Essential functions', '')}</p>
-      <p>{copy.traffic}</p>
-      <p><strong>{locale === 'ko' ? '분석' : 'Analytics'}</strong>{copy.analytics.replace(locale === 'ko' ? '분석' : 'Analytics', '')}</p>
-      <p>{copy.interaction}</p>
-      <p>{copy.unavailable}</p>
-    </div>
-  </section>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="control">
-    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="control">Control</h2>
-    <div class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">
-      <p class="mt-0">{copy.control}</p>
-      <p><button class="inline-flex cursor-pointer items-center gap-[0.45rem] border-0 bg-transparent p-0 font-bold text-[var(--signal)]" type="button" data-tracking-settings>{copy.open} <span aria-hidden="true">→</span></button></p>
-    </div>
-  </section>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="contact">
-    <h2 class="col-[1/span_3] m-0 font-mono text-base leading-meta font-bold tracking-[0.04em] text-[var(--signal)] uppercase max-[719px]:col-span-full max-[719px]:mb-4 md:text-lg" id="contact">Contact</h2>
-    <p class="col-[5/span_7] m-0 text-[clamp(1.0625rem,0.6vw_+_0.95rem,1.25rem)] leading-copy max-[719px]:col-span-full">{copy.contact} <a href={`mailto:${site.email}`}>{site.email}</a>{copy.contactEnd}</p>
-  </section>
+  <PageHead lines={copy.heading}>
+    <p class="mt-8 max-w-[40rem] text-body text-soft">{copy.intro}</p>
+  </PageHead>
+  <div class="mt-section divide-y divide-rule border-y border-rule">
+    <Entry as="section" padding="py-10" aria-labelledby="categories">
+      <h2 slot="meta" class={label} id="categories">{labels.categories}</h2>
+      <div class="grid gap-4 text-body">
+        <p><strong>{labels.essential}</strong>{copy.essential.replace(labels.essential, '')}</p>
+        <p>{copy.traffic}</p>
+        <p><strong>{labels.analytics}</strong>{copy.analytics.replace(labels.analytics, '')}</p>
+        <p>{copy.interaction}</p>
+        <p>{copy.unavailable}</p>
+      </div>
+    </Entry>
+    <Entry as="section" padding="py-10" aria-labelledby="control">
+      <h2 slot="meta" class={label} id="control">{labels.control}</h2>
+      <p class="text-body">{copy.control}</p>
+      <p class="mt-4"><button class="cursor-pointer border-0 bg-transparent p-0 font-bold text-signal underline decoration-signal/35 underline-offset-[0.24em] hover:decoration-signal" type="button" data-tracking-settings>{copy.open}</button></p>
+    </Entry>
+    <Entry as="section" padding="py-10" aria-labelledby="contact">
+      <h2 slot="meta" class={label} id="contact">{labels.contact}</h2>
+      <p class="text-body">{copy.contact} <a href={`mailto:${site.email}`}>{site.email}</a>{copy.contactEnd}</p>
+    </Entry>
+  </div>
 </BaseLayout>

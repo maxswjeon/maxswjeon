@@ -3,15 +3,15 @@
 ## Source of truth
 
 - Status: Active
-- Last refreshed: 2026-09-15
+- Last refreshed: 2026-09-18
 - Primary product surfaces: localized `swjeon.kr/ko/` and `swjeon.kr/en/` homes, About, Work, project detail, archive, and Privacy routes under both locale prefixes, `/404.html`, and the external `swjeon.dev` writing site.
 - Evidence reviewed: `.omx/context/cool-technical-redesign-20260913T080834Z.md`, `.omx/artifacts/visual-ralph/moodboard/reference.md`, `docs/IMPLEMENTATION-HANDOFF.md`, `docs/projects-and-experience.md`, `docs/2021.pdf`, `docs/2022.pdf`, the live and legacy `swjeon.kr` portfolio, the user-supplied profile image, verified public project repositories, and the existing route, layout, content, tracking, and style files described by those sources.
 
 ## Brand
 
-- Personality: cool, technical, editorial, calm, exact, and generous with knowledge.
+- Personality: personal, calm, exact, and generous with knowledge; reads like an annotated CV rather than a studio portfolio.
 - Trust signals: plain statements of scope, explicit project status, accurate employment relationships, visible contribution caveats, and links only to verified public destinations.
-- Avoid: beige, cream, sepia, yellow-cast surfaces, portfolio-cover theatrics, dashboard motifs, dense card grids, neon overload, skill meters, gamified counters, invented metrics or imagery, excessive effects, and imitation of a reference site's branded assets.
+- Avoid: green in any role, beige, cream, sepia, yellow-cast surfaces, large red fields or bands (red is an accent only), serif display faces, monospace labels, all-caps eyebrows, portfolio-cover theatrics, dashboard motifs, dense card grids, skill meters, gamified counters, invented metrics or imagery, excessive effects, and imitation of a reference site's branded assets.
 
 ## Product goals
 
@@ -27,14 +27,14 @@
 
 ## Information architecture
 
-- Primary navigation: the persistent header links to About, Writing (external), and Work, plus a compact native language menu that preserves the current page when switching between Korean and English. Visible breadcrumbs are omitted because the compact hierarchy and header provide sufficient wayfinding; BreadcrumbList structured data remains for search semantics.
+- Primary navigation: a persistent identity column (avatar, name, role line, navigation, contact) links to 소개/About, 작업/Work, and 글/Writing (external), plus a single link to the other locale that preserves the current page. Visible breadcrumbs are omitted because the compact hierarchy and header provide sufficient wayfinding; BreadcrumbList structured data remains for search semantics.
 - Core routes/screens: `/ko/` and `/en/` route trees for Home, About, Work, `/work/[slug]/`, `/work/archive/`, and Privacy; `/` and former unprefixed routes select a supported locale from browser preferences in local preview and `Accept-Language` at the CloudFront edge; `/404.html` remains shared.
-- Content hierarchy: person and purpose first; approach second; selected evidence third; employment and product experience as equal first-level entries within Experience; then clearly separated client, personal, school, and club/community projects within Projects. Service work and experience highlights use the same numbered evidence-row pattern beneath their organization. A simple contact call to action sits at the end of the reading path. Future message sending and server status must fit this hierarchy without requiring a redesign, but neither receives placeholder UI in this pass.
+- Content hierarchy: person and purpose first; approach second; a dated experience summary third; selected evidence fourth; employment and product experience as equal first-level entries within Experience; then clearly separated client, personal, school, and club/community projects within Projects. Service work and experience highlights sit as an indented list beneath their organization. Contact stays visible in the identity column on wide screens and closes the reading path in the footer on narrow screens. Future message sending and server status must fit this hierarchy without requiring a redesign, but neither receives placeholder UI in this pass.
 
 ## Design principles
 
 - Purpose before proof: introduce the intended change before showing project evidence.
-- Technical editorial continuity: use strong Korean typography, compact monospace metadata, open sections, thin dividers, and deliberate contrast instead of interchangeable cards.
+- One axis for facts: every row puts its dates, roles, provenance, or section label in a fixed meta column and its substance in the content column, so the page scans like an annotated CV instead of interchangeable cards.
 - Semantic line composition: major display headings define line breaks at complete phrases. Wide layouts keep those phrases intact; narrow layouts balance wrapping inside each phrase and keep short verb groups together so a particle, auxiliary phrase, or predicate never sits alone on the last line. Distinct complete sentences may also occupy separate visual blocks when their roles differ.
 - Content over spectacle: borrow structural ideas from the approved references while keeping this site's identity, claims, assets, and interaction patterns original.
 - Honest specificity: distinguish employment, collaboration, participation, external work, completion, and development states in visible copy.
@@ -42,39 +42,40 @@
 
 ## Visual language
 
-- Color: cool near-black `#090b0f` is the principal canvas; selected reading-heavy surfaces use a pure cool off-white `#f4f5f2`. Primary text is a neutral off-white with no beige or yellow cast, secondary text is cool gray, and restrained mint-cyan `#53e0c2` is the interactive accent. A distinct semantic green is reserved for a future real server-health state.
-- Typography: `Pretendard Variable` is the primary family for Korean, Latin, body, and display text. `D2Coding` is limited to indices, metadata, timestamps, and compact status labels, with Pretendard as its explicit fallback so Korean never falls through to a system legacy font. Load only the regular D2Coding webfont face; the second 1.6MB face does not justify its transfer cost for compact metadata. Display type is decisive without overwhelming the page; body text remains at least 16px and metadata at least 13px.
-- Spacing/layout rhythm: fluid page gutters, generous vertical sections, strong first-screen composition, bounded introductory prose measures, thin full-width rules, and an editorial grid that collapses cleanly to one column. Descriptions inside list rows and experience/project containers span the available content column; project-group headings are not artificially width-constrained. Korean display headings use open leading around 1.12-1.22 and prose around 1.85-1.9 so wrapped lines do not feel compressed. Display widths use phrase-aware line data and `text-wrap: balance` rather than character-count containers that can strand the final word.
-- Shape/radius/elevation: square technical geometry, small radii only where state grouping benefits, and no drop-shadow hierarchy or glassmorphism.
-- Motion: only short color, underline, and directional-arrow feedback, targeted below 160ms. Do not use scroll hijacking, parallax, continuous loops, cursor-following motion, magnetic interactions, or entrance sequences that hide content. Remove nonessential motion under `prefers-reduced-motion`.
-- Imagery/iconography: keep the site typography- and content-led while using one verified square profile image in the shared header and verified project-owned or previously published portfolio screenshots alongside their relevant experience/detail content. Store images locally, preserve their natural aspect ratio, and omit media regions when no public or authorized visual exists. Captions describe the image itself and never distinguish a “previous portfolio” from the current one. Use simple typographic indices and directional marks; do not import reference-site logos, unverified imagery, 3D assets, or branded interaction motifs.
+- Color: cool mist `#f5f6f8` is the only page ground; rows lift to white `#ffffff` on hover and images, status boxes, and dialogs sit on white. Ink `#15171c` carries headings and primary text, soft gray `#5b616c` secondary text and meta, rule `#dde0e5` hairlines. Signal red `#c4282b` is the single accent: links and calls to action, the active navigation marker, and the email address. Red tint `#f8e7e7` with deep red `#8f1d20` text forms the project tags. Never use red as a large field or band, and never use green.
+- Typography: `Pretendard Variable` is the only family, for Korean, Latin, display, body, and meta. Hierarchy comes from size and weight: extra-bold (800) page headings with tight tracking, bold (700) section and row titles, regular body. Dates use tabular figures. Body text is at least 16px with 1.85 leading, meta at least 13px, section labels in the meta column 18px.
+- Spacing/layout rhythm: from 860px the page is two columns, a sticky identity column (14–19rem) and a content column. The page heading aligns with the name in the identity column. Content rows use a 9.5rem meta column plus a content column; descriptions inside rows span the content column, while page introductions keep a bounded measure. Sections are separated by generous space rather than bands; hairline rules only separate rows that belong to one list. Below 860px the identity column collapses into a compact header with a horizontal navigation row, and the meta column stacks above its content.
+- Semantic Korean headings keep each phrase on one line from 1280px; below that they balance-wrap inside each phrase. English headings always balance-wrap.
+- Shape/radius/elevation: 12px radius for hover-lifted rows, images, status boxes, and dialogs; full radius for the avatar and tags. No drop-shadow hierarchy apart from the consent banner, and no glassmorphism.
+- Motion: only color, background, and navigation-marker width feedback, 150ms. Do not use scroll hijacking, parallax, continuous loops, cursor-following motion, magnetic interactions, or entrance sequences that hide content. Remove nonessential motion under `prefers-reduced-motion`.
+- Imagery/iconography: the illustrated square profile image is the site mark, shown round in the identity column and the social image. Verified project-owned or previously published screenshots appear beside their experience or project content on white with a hairline border, at their natural aspect ratio; media regions are omitted when no public or authorized visual exists. External links identify themselves with `↗`; internal links carry no arrow.
 
 ## Components
 
 - Existing components to reuse: the shared base layout, consent-aware `Tracking.astro` integration, route-native content structure, and existing content records.
-- New/changed components: refresh shared header, footer, section, metadata, experience evidence, project evidence, contact call-to-action, tracking dialog, and error-page treatments only where reuse is justified by repetition.
-- Variants and states: external links identify themselves with `↗`; current navigation uses `aria-current`; status is written as text rather than encoded by color alone; project rows support compact metadata without becoming dashboard cards.
+- Shared components: `src/components/ui/Entry.astro` (meta column plus content row, optionally a whole-row link that lifts to white), `PageHead.astro` (page heading with semantic lines and an introduction slot), `SectionTitle.astro` (section heading whose semantic lines join on wide screens), and `Tags.astro` (red-tint project tags from the project eyebrow).
+- Variants and states: external links identify themselves with `↗`; current navigation uses `aria-current` with a red marker; status is written as text in a white box rather than encoded by color alone; project rows carry tags without becoming dashboard cards.
 - Token/component ownership: `src/styles/tailwind.css` contains only Tailwind theme tokens and essential element-level base rules. Component, responsive, state, and print styling is expressed directly with Tailwind utilities in Astro markup. Korean and English public facts live in `src/content/public.ts` and `src/content/public.en.ts`; shared document structure remains in `src/layouts/BaseLayout.astro`.
 
 ## Accessibility
 
 - Target standard: WCAG 2.2 AA.
 - Keyboard/focus behavior: preserve the browser's native cursor everywhere; do not implement a custom cursor, follower, pointer trail, or cursor replacement. All interactive elements remain native links or buttons with a high-contrast visible focus ring, and a skip link reaches the main content.
-- Contrast/readability: body, secondary, accent, and focus colors must meet readable contrast on both near-black and off-white surfaces; large type wraps naturally without fixed heights.
+- Contrast/readability: body, secondary, accent, and focus colors must meet readable contrast on both the mist ground and white surfaces; large type wraps naturally without fixed heights.
 - Screen-reader semantics: one page-level `h1`, ordered headings, landmarks, descriptive link text, and JSON-LD that matches visible content. BreadcrumbList data may remain in metadata without duplicating a visual breadcrumb.
 - Reduced motion and sensory considerations: disable nonessential transitions for reduced motion; meaning never depends on hover, color, animation, or pointer precision alone.
 
 ## Responsive behavior
 
-- Supported breakpoints/devices: fluid from 360px through wide desktop; retain a structural adaptation around the existing tablet breakpoint; bound line length on wide displays.
-- Layout adaptations: compact navigation may wrap; persistent wide-screen identity and split editorial rows become a clear single-column reading order; hero type scales with `clamp()`; metadata reflows without horizontal scrolling. Major headings keep explicit semantic lines from 1024px upward and allow balanced wrapping within those same phrase groups below 1024px.
+- Supported breakpoints/devices: fluid from 360px through wide desktop; the two-column identity layout starts at 860px (`split:`), and Korean headings lock their phrase lines from 1280px (`xl:`).
+- Layout adaptations: the sticky identity column becomes a compact header with a wrapping navigation row; the contact block moves to the footer; meta columns stack above their content; heading type scales with `clamp()`; metadata reflows without horizontal scrolling.
 - Touch/hover differences: links and controls keep generous touch targets and visible resting affordances; hover feedback is supplementary and motion remains minimal.
 
 ## Interaction states
 
 - Loading: static HTML contains all primary content, so no page-level loading or entrance-gated state is needed.
 - Empty: sections with no verified public content are omitted rather than filled with decorative placeholders.
-- Error: the 404 page uses the same cool technical editorial system, explains the missing route, and links to Home and Work.
+- Error: the 404 page uses the same identity-column layout, explains the missing route, and links to Home and Work.
 - Success: no submission workflow exists in this pass; the current contact route stays simple. A future message-sending success state is deferred until its delivery provider and requirements are specified.
 - Disabled: required preference storage is fixed; tracking categories without configured providers are hidden and disabled.
 - Offline/slow network: core content and navigation remain available from static HTML; font loading and analytics must not block reading. Live monitoring, polling, incident history, and offline monitoring states are deferred.
@@ -82,17 +83,17 @@
 ## Content voice
 
 - Tone: direct, calm, and concrete in both Korean and English; established project and product names remain unchanged across locales.
-- This is a personal site. Use straightforward navigation and contact labels (“소개” / “About me”, “연락하기” / “Get in touch”). Avoid product-discovery prompts such as “Explore the approach” and company-style invitations to build better ways of working together.
+- This is a personal site. Use straightforward navigation labels (“소개”, “작업”, “글” / “About”, “Work”, “Writing”) and contact through the visible email address. Avoid product-discovery prompts such as “Explore the approach” and company-style invitations to build better ways of working together.
 - Terminology: the public identity is “Engineer”; Korean experience headings use bilingual company labels such as “엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니”, “플라네타리움 (나인코퍼레이션)”, and “프로메디우스 (Promedius Inc.)” so the localized name and official brand remain recognizable. Collaboration is “NEXON 플랫폼본부(구 인텔리전스랩스)”.
 - Microcopy rules: lead with the problem and contribution; avoid personal-name self-reference and first-person English sentences; use short declarative headings without terminal periods; use `::` as the document-title separator and avoid em dashes; state limitations beside the relevant claim; do not invent current status, metrics, dates, links, or personal details. External evidence links use the visible page title verified from the destination rather than generic labels such as “관련 보도” or “공개 자료”.
 
 ## Implementation constraints
 
 - Framework/styling system: Astro 7 static output with Tailwind CSS 4 through its first-party Vite plugin. Preflight remains disabled; Astro components own their styling through Tailwind utilities rather than semantic component selectors or scoped style blocks.
-- Design-token constraints: express the cool-neutral palette, Pretendard/D2Coding typography, and leading scale through Tailwind theme variables and the minimal base custom properties consumed by arbitrary utilities; do not retain or reintroduce warm-paper tokens or add a second theme system.
+- Design-token constraints: express the palette (`mist`, `ink`, `soft`, `rule`, `signal`, `signal-deep`, `signal-tint`, `focus`), Pretendard, the `meta`/`label`/`body` text sizes, leading, `rail`/`section` spacing, and the `split` breakpoint as Tailwind theme variables; do not reintroduce a monospace face, warm-paper or green tokens, or a second theme system.
 - Performance constraints: static HTML, the approved Pretendard loading strategy with robust fallbacks, locally optimized responsive images with fixed dimensions, lazy-loaded below-fold project media, minimal inline structured data, and consent-aware tracking that never blocks content. Synthetic performance checks cover FCP, LCP, CLS, TTFB, DOM readiness, load time, and transferred bytes on production output.
 - Compatibility constraints: preserve factual caveats, SEO metadata, tracking controls, no-JavaScript rendering, and S3/CloudFront-friendly trailing slashes. Both locales use prefixed canonical URLs and reciprocal `hreflang`; former unprefixed and legacy routes temporarily redirect to the visitor's supported preferred locale.
-- Test/screenshot expectations: Astro check and build succeed; existing automated accessibility, single-`h1`, no-overflow, no-JavaScript, route, tracking-dialog, alias, and 404 assertions remain green; capture and review desktop at 1440px and mobile at 390px/360px against the approved multi-reference direction.
+- Test/screenshot expectations: Astro check and build succeed; existing automated accessibility, single-`h1`, no-overflow, no-JavaScript, route, tracking-dialog, alias, and 404 assertions remain green; capture and review desktop at 1440px and mobile at 390px/360px against the approved “Profile” direction (round two, option E).
 
 ## Open questions
 

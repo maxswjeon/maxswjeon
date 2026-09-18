@@ -6,6 +6,8 @@ const fontPath = new URL('./assets/SWJeonOG.woff2', import.meta.url);
 const outputPath = fileURLToPath(new URL('../public/og.png', import.meta.url));
 const font = await readFile(fontPath);
 const fontDataUrl = `data:font/woff2;base64,${font.toString('base64')}`;
+const avatar = await readFile(new URL('../src/assets/profile.jpg', import.meta.url));
+const avatarDataUrl = `data:image/jpeg;base64,${avatar.toString('base64')}`;
 const fontSample = '전상완 Sangwan Jeon ENGINEER 세상이 더 효율적으로 움직이고, 사람들이 더 능숙하게 일할 수 있도록. 도구와 시스템, 그리고 경험과 지식. swjeon.kr';
 
 const browser = await chromium.launch();
@@ -38,8 +40,8 @@ try {
           body {
             margin: 0;
             overflow: hidden;
-            background: #090b0f;
-            color: #f2f4f7;
+            background: #f5f6f8;
+            color: #15171c;
             font-family: "SWJeon OG", sans-serif;
             font-synthesis: none;
             font-weight: 600;
@@ -61,13 +63,24 @@ try {
 
           header {
             padding-bottom: 26px;
-            border-bottom: 1px solid rgb(255 255 255 / 14%);
+            border-bottom: 1px solid #dde0e5;
             font-size: 24px;
             letter-spacing: -0.025em;
           }
 
+          header img {
+            width: 56px;
+            height: 56px;
+            margin-right: 18px;
+            border-radius: 50%;
+          }
+
+          header span:first-of-type {
+            margin-right: auto;
+          }
+
           header span:last-child {
-            color: #53e0c2;
+            color: #c4282b;
             font-size: 18px;
             letter-spacing: 0.18em;
           }
@@ -83,13 +96,13 @@ try {
           }
 
           footer {
-            color: #9aa5b4;
+            color: #5b616c;
             font-size: 21px;
             letter-spacing: -0.025em;
           }
 
           footer span:last-child {
-            color: #53e0c2;
+            color: #c4282b;
             letter-spacing: -0.01em;
           }
         </style>
@@ -97,6 +110,7 @@ try {
       <body>
         <main>
           <header>
+            <img src="${avatarDataUrl}" alt="">
             <span>전상완 · Sangwan Jeon</span>
             <span>ENGINEER</span>
           </header>

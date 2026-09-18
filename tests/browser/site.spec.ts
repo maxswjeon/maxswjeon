@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import AxeBuilder from '@axe-core/playwright';
 
-for (const width of [360, 768, 1440]) {
+for (const width of [360, 768, 900, 1440]) {
   test(`navigation, accessibility and layout at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 960 });
     for (const route of ['/ko/', '/ko/about/', '/ko/work/']) {
@@ -14,7 +14,7 @@ for (const width of [360, 768, 1440]) {
         })
         .map(element => ({ tag: element.tagName, text: element.textContent?.trim().slice(0, 60), rect: element.getBoundingClientRect().toJSON() })));
       expect(overflowing, `${route} at ${width}px has horizontal overflow`).toEqual([]);
-      const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
       expect(audit.violations).toEqual([]);
       if (route === '/ko/work/') {
         for (const image of await page.locator('img[loading="lazy"]').all()) await image.scrollIntoViewIfNeeded();
@@ -23,7 +23,7 @@ for (const width of [360, 768, 1440]) {
       await page.screenshot({ path: `test-results/screenshots/${width}-${route.replaceAll('/', '') || 'home'}.png`, fullPage: true });
     }
     await page.goto('/ko/');
-    await page.getByRole('navigation').getByRole('link', { name: 'Work', exact: true }).click();
+    await page.getByRole('navigation').getByRole('link', { name: '작업', exact: true }).click();
     await expect(page).toHaveURL(/\/work\/$/);
   });
 }
@@ -33,7 +33,7 @@ test('core content is available without JavaScript', async ({ browser, baseURL }
   const page = await context.newPage();
   await page.goto('/ko/');
   await expect(page.locator('h1')).toContainText('효율');
-  await page.getByRole('navigation').getByRole('link', { name: 'Work', exact: true }).click();
+  await page.getByRole('navigation').getByRole('link', { name: '작업', exact: true }).click();
   await expect(page.locator('main')).toContainText('엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니');
   await context.close();
 });
@@ -46,24 +46,22 @@ test('no trackers requested before consent or without configured IDs', async ({ 
   expect(trackingRequests).toEqual([]);
 });
 
-test('uses Pretendard, D2Coding and Korean-safe line breaking', async ({ page }) => {
+test('uses Pretendard alone with Korean-safe line breaking', async ({ page }) => {
   await page.goto('/ko/');
-  const typography = await page.evaluate(async () => {
-    await document.fonts.load('700 13px D2Coding');
+  const typography = await page.evaluate(() => {
     const rootStyle = getComputedStyle(document.documentElement);
-    const monoStyle = getComputedStyle(document.querySelector('main > section:first-child p:first-child')!);
+    const families = new Set([...document.querySelectorAll('body *')].map(element => getComputedStyle(element).fontFamily));
     return {
       documentFamily: rootStyle.fontFamily,
-      monoFamily: monoStyle.fontFamily,
-      d2CodingLoaded: document.fonts.check('700 13px D2Coding'),
+      otherFamilies: [...families].filter(family => !family.startsWith('"Pretendard Variable"')),
       wordBreak: rootStyle.wordBreak,
     };
   });
   expect(typography.documentFamily).toContain('Pretendard Variable');
-  expect(typography.monoFamily).toContain('D2Coding');
-  expect(typography.d2CodingLoaded).toBe(true);
+  expect(typography.otherFamilies).toEqual([]);
   expect(typography.wordBreak).toBe('keep-all');
   await expect(page.locator('link[href*="pretendardvariable-dynamic-subset"]')).toHaveCount(1);
+  await expect(page.locator('link[href*="d2-coding"]')).toHaveCount(0);
 });
 
 test('keeps all visible interface copy at 13px or larger', async ({ page }) => {
@@ -117,7 +115,7 @@ test('separates projects by provenance and keeps work wording specific', async (
   await expect(page.locator('section[aria-labelledby="project-group-community"]').getByRole('link', { name: /Bear OJ/ }).first()).toBeVisible();
   await expect(page.locator('section[aria-labelledby="project-group-community"]').getByRole('link', { name: /OUTTA 수료증 관리/ }).first()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'SpaceY 강연 안내 사이트' })).toBeVisible();
-  await expect(page.locator('#nine-corporation')).toContainText('2023.01-2023.04');
+  await expect(page.locator('#nine-corporation')).toContainText('2023.01–2023.04');
   await expect(page.locator('#nine-corporation')).toContainText('Frontend Engineer');
   await expect(page.locator('#nine-corporation')).toContainText('게임 런처의 활성화 흐름');
   await expect(page.locator('#nine-corporation')).toContainText('포털 계정 복구 서비스');
@@ -130,11 +128,11 @@ test('separates projects by provenance and keeps work wording specific', async (
   await expect(page.locator('#nine-corporation').getByRole('link', { name: 'Planetarium Labs ↗' })).toHaveAttribute('href', 'https://www.planetariumlabs.com/');
   await expect(page.getByRole('heading', { name: '엔진스튜디오 (NGINE STUDIOS) · 넥슨컴퍼니' })).toBeVisible();
   await expect(page.getByRole('heading', { name: '플라네타리움 (나인코퍼레이션)' })).toBeVisible();
-  await expect(page.locator('#nexon-ngine-studios')).toContainText('Frontend Engineer · 정규직 · 2024.04-2026.05');
+  for (const text of ['2024.04–2026.05', 'Frontend Engineer', '정규직']) await expect(page.locator('#nexon-ngine-studios')).toContainText(text);
   await expect(page.locator('#nexon-ngine-studios')).toContainText('넥슨 게임의 활성 이용자를 늘리고');
   await expect(page.locator('#zible')).toContainText('Datahog와 Sentry');
   await expect(page.locator('#zible')).toContainText('Full Stack Engineer');
-  await expect(page.locator('#promedius')).toContainText('2022.01-2022.02');
+  await expect(page.locator('#promedius')).toContainText('2022.01–2022.02');
   await expect(page.locator('#promedius')).toContainText('인턴');
   await expect(page.locator('#promedius')).toContainText('라이선스 관리 시스템의 PoC');
   await expect(page.locator('#promedius')).toContainText('FreeIPA');
@@ -153,7 +151,7 @@ test('separates projects by provenance and keeps work wording specific', async (
   }
   const experienceHierarchy = await page.locator('#nexon-ngine-studios, #nine-corporation, #zible, #promedius').evaluateAll(entries =>
     entries.map(entry => {
-      const heading = entry.querySelector('h2')!;
+      const heading = entry.querySelector('h3')!;
       return {
         left: Math.round(heading.getBoundingClientRect().left),
         level: heading.tagName,
@@ -166,13 +164,13 @@ test('separates projects by provenance and keeps work wording specific', async (
   expect(new Set(experienceHierarchy.map(item => item.level)).size).toBe(1);
   expect(new Set(experienceHierarchy.map(item => item.size)).size).toBe(1);
   const experienceRuleWidths = await page.evaluate(() => ({
-    nexonLastItemBottom: getComputedStyle(document.querySelector('#nexon-ngine-studios > div > article:last-child')!).borderBottomWidth,
+    nexonTop: getComputedStyle(document.querySelector('#nexon-ngine-studios')!).borderTopWidth,
     nexonBottom: getComputedStyle(document.querySelector('#nexon-ngine-studios')!).borderBottomWidth,
     nineTop: getComputedStyle(document.querySelector('#nine-corporation')!).borderTopWidth,
   }));
-  expect(experienceRuleWidths).toEqual({ nexonLastItemBottom: '0px', nexonBottom: '1px', nineTop: '0px' });
-  await expect(page.locator('#nexon-ngine-studios > div > article > span:first-child')).toHaveText(['01', '02', '03', '04']);
-  await expect(page.locator('#nine-corporation > div > article > span:first-child')).toHaveText(['01', '02', '03']);
+  expect(experienceRuleWidths, 'entries share one rule between them').toEqual({ nexonTop: '0px', nexonBottom: '1px', nineTop: '0px' });
+  await expect(page.locator('#nexon-ngine-studios li h4')).toHaveText(['AD Creator', 'NEXON 내부 CRM을 위한 다매체 발송 시스템', 'Voice Creator', '모바일 웹 기반 AI 이미지 데모']);
+  await expect(page.locator('#nine-corporation li h4')).toHaveCount(3);
   await expect(page.getByText('개발과 운영 전반을 전담해')).toBeVisible();
   await expect(page.getByText('서비스 정리 업무에도 마지막까지 참여했습니다.')).toBeVisible();
   await expect(page.getByRole('heading', { name: '모바일 웹 기반 AI 이미지 데모' })).toBeVisible();
@@ -183,8 +181,8 @@ test('lets item descriptions use their full content column without forcing group
   await page.setViewportSize({ width: 1440, height: 960 });
 
   for (const [route, selectors] of [
-    ['/ko/', ['#approach ol > li > p', 'section[aria-labelledby="selected-title"] a[href^="/ko/work/"] > div > p:last-child']],
-    ['/ko/work/', ['#nexon-ngine-studios > header > p:last-child', '#nine-corporation > p, #zible > p, #promedius > p', 'section[aria-labelledby="experience-title"] article article p', 'section[aria-labelledby^="project-group-"] > article a[href^="/ko/work/"] > p', 'section[aria-labelledby="tools-title"] li p']],
+    ['/ko/', ['#approach li p', 'section[aria-labelledby="selected-title"] li p']],
+    ['/ko/work/', ['#nexon-ngine-studios > div > p', '#nine-corporation > div > p, #zible > div > p, #promedius > div > p', 'section[aria-labelledby="experience-title"] article li > div > p', 'section[aria-labelledby^="project-group-"] > article p', 'section[aria-labelledby="tools-title"] li p']],
   ] as const) {
     await page.goto(route);
     for (const selector of selectors) {
@@ -228,13 +226,11 @@ test('serves prefixed Korean and English routes with reciprocal language links a
   await expect(page.locator('html')).toHaveAttribute('lang', 'ko');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://swjeon.kr/ko/work/');
   await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', 'https://swjeon.kr/en/work/');
-  await page.locator('header details').click();
   await page.getByRole('link', { name: 'English', exact: true }).click();
   await expect(page).toHaveURL(/\/en\/work\/$/);
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page.getByRole('heading', { name: 'Planetarium (Nine Corporation)' })).toBeVisible();
   await expect(page.locator('link[rel="alternate"][hreflang="ko"]')).toHaveAttribute('href', 'https://swjeon.kr/ko/work/');
-  await page.locator('header details').click();
   await expect(page.getByRole('link', { name: '한국어', exact: true })).toHaveAttribute('href', '/ko/work/');
 });
 
@@ -252,7 +248,7 @@ test('keeps the English locale readable at mobile and desktop widths', async ({ 
         })
         .map(element => ({ tag: element.tagName, text: element.textContent?.trim().slice(0, 60), rect: element.getBoundingClientRect().toJSON() })));
       expect(overflowing, `${route} at ${width}px has horizontal overflow`).toEqual([]);
-      const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
       expect(audit.violations).toEqual([]);
       if (route === '/en/work/') {
         for (const image of await page.locator('img[loading="lazy"]').all()) await image.scrollIntoViewIfNeeded();
@@ -280,15 +276,14 @@ test('keeps major Korean headings on semantic, visually balanced lines', async (
   expect(desktopLines).toEqual([1, 1]);
 
   await expect(page.locator('#approach-title')).toHaveAttribute('aria-label', '도구부터 운영까지 일의 흐름을 살핍니다');
-  await expect(page.locator('#approach ol > li').nth(1).locator('h3')).toHaveAttribute('aria-label', '복잡한 일을 이해하고 다룰 수 있게 합니다');
-  await expect(page.locator('#approach ol > li').nth(1).locator('h3 > span')).toHaveText([
+  await expect(page.locator('#approach li').nth(1).locator('h3')).toHaveAttribute('aria-label', '복잡한 일을 이해하고 다룰 수 있게 합니다');
+  await expect(page.locator('#approach li').nth(1).locator('h3 > span')).toHaveText([
     '복잡한 일을 이해하고',
     '다룰\u00a0수\u00a0있게\u00a0합니다',
   ]);
-  await expect(page.locator('#approach ol > li').nth(2).locator('h3')).toHaveAttribute('aria-label', '배운 것을 기록하고 나눕니다');
+  await expect(page.locator('#approach li').nth(2).locator('h3')).toHaveAttribute('aria-label', '배운 것을 기록하고 나눕니다');
   await expect(page.locator('#selected-title')).toHaveAttribute('aria-label', '생각은 시스템이 되어 실제로 작동합니다');
   await expect(page.locator('#writing-title')).toHaveAttribute('aria-label', '배운 것을 설명하며 다시 이해합니다');
-  await expect(page.locator('footer p[data-multiline-text] > .sr-only')).toHaveText('연락하기');
   await expect(page.locator('[data-purpose-introduction] > span')).toHaveText([
     '불필요한 수고를 줄이는 도구와 시스템을 만듭니다.',
     '만든 도구와 시스템을 다른 사람도 이해하고 활용할 수 있도록 경험과 지식을 나눕니다.',
@@ -302,10 +297,9 @@ test('keeps major Korean headings on semantic, visually balanced lines', async (
 
   const semanticLineSelectors = [
     '#approach-title > span',
-    '#approach ol > li h3 > span',
+    '#approach li h3 > span',
     '#selected-title > span',
     '#writing-title > span',
-    'footer p[data-multiline-text] > span[aria-hidden="true"]',
   ];
   for (const selector of semanticLineSelectors) {
     const lineCounts = await page.locator(selector).evaluateAll(elements => elements.map(element => {
@@ -339,10 +333,6 @@ test('keeps major Korean headings on semantic, visually balanced lines', async (
   for (const route of ['/ko/', '/ko/about/', '/ko/work/']) {
     const lines = await visualLines(route);
     expect(lines.at(-1)?.trim().split(/\s+/).length, `${route} must not leave one word on the final line`).toBeGreaterThan(1);
-    if (route === '/ko/') {
-      expect(lines).toHaveLength(4);
-      expect(lines.at(-1)?.replaceAll('\u00a0', ' ')).toBe('일할 수 있도록');
-    }
   }
 
   await page.goto('/ko/');
@@ -381,7 +371,7 @@ test('does not isolate protected heading terms on narrow screens', async ({ page
 
   for (const route of ['/ko/', '/ko/about/', '/ko/work/', '/en/', '/en/about/', '/en/work/', '/404.html']) {
     await page.goto(route);
-    const lines = await visualLines('h1, h2, h3, h4, footer p[data-multiline-text]');
+    const lines = await visualLines('h1, h2, h3, h4');
     expect(lines, `${route} must not leave a protected term on its own line`).not.toEqual(expect.arrayContaining([
       'STUDIOS)',
       '· 넥슨컴퍼니',
@@ -394,6 +384,30 @@ test('does not isolate protected heading terms on narrow screens', async ({ page
       'systems',
       'reusable',
     ]));
+  }
+});
+
+test('does not leave one word alone on the last line of a wrapped section heading', async ({ page }) => {
+  for (const width of [320, 480, 860]) {
+    await page.setViewportSize({ width, height: 960 });
+    for (const route of ['/ko/', '/ko/work/', '/en/', '/en/work/']) {
+      await page.goto(route);
+      const orphans = await page.locator('main h2').evaluateAll(elements => elements.flatMap(element => {
+        const words: { text: string; top: number }[] = [];
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+          for (const match of node.textContent?.matchAll(/\S+/g) ?? []) {
+            const range = document.createRange();
+            range.setStart(node, match.index!);
+            range.setEnd(node, match.index! + match[0].length);
+            words.push({ text: match[0], top: Math.round(range.getBoundingClientRect().top) });
+          }
+        }
+        const lines = [...Map.groupBy(words, word => word.top).values()];
+        return lines.length > 1 && lines.at(-1)!.length === 1 ? [element.textContent!.trim()] : [];
+      }));
+      expect(orphans, `${route} at ${width}px leaves a single word on a heading's last line`).toEqual([]);
+    }
   }
 });
 
@@ -425,10 +439,10 @@ test('omits terminal periods from title and subtitle text', async ({ page }) => 
 
   for (const route of routes) {
     await page.goto(route);
-    const trailingPeriods = await page.locator('h1, h2, h3, h4, [data-multiline-text]').evaluateAll(elements =>
+    const trailingPeriods = await page.locator('h1, h2, h3, h4').evaluateAll(elements =>
       elements
         .map(element => element.textContent?.replace(/\s+/g, ' ').trim() ?? '')
-        .filter(text => text.endsWith('.')),
+        .filter(text => text.endsWith('.') && !/\bInc\.$/.test(text)),
     );
     expect(trailingPeriods, `${route} has title-level text ending in a period`).toEqual([]);
   }
@@ -436,10 +450,10 @@ test('omits terminal periods from title and subtitle text', async ({ page }) => 
 
 test('serves the local profile image and verified project media with dimensions', async ({ page }) => {
   await page.goto('/ko/');
-  const profile = page.locator('body > header img');
+  const profile = page.locator('header img');
   await expect(profile).toHaveCount(1);
   await expect(profile).toHaveAttribute('alt', '전상완 프로필');
-  await expect(page.locator('main > section:first-child img')).toHaveCount(0);
+  await expect(page.locator('main > header img')).toHaveCount(0);
 
   for (const route of [
     '/ko/work/coryose-process/',
@@ -469,7 +483,7 @@ test('serves the local profile image and verified project media with dimensions'
     await image.scrollIntoViewIfNeeded();
     expect(await image.evaluate(element => (element as HTMLImageElement).complete && (element as HTMLImageElement).naturalWidth > 0)).toBe(true);
   }
-  const recoveryItem = page.locator('#nine-corporation > div > article').filter({ has: page.getByRole('heading', { name: 'Nine Chronicles Account Recovery' }) });
+  const recoveryItem = page.locator('#nine-corporation li').filter({ has: page.getByRole('heading', { name: 'Nine Chronicles Account Recovery' }) });
   await expect(recoveryItem.locator('img')).toHaveCount(1);
   await expect(page.locator('#nine-corporation > figure')).toHaveCount(0);
   await expect(page.getByText(/기존 포트폴리오에 공개한/)).toHaveCount(0);
@@ -494,7 +508,7 @@ test('uses open leading and readable section labels from the utility layer', asy
   await page.goto('/ko/about/');
   const metrics = await page.evaluate(() => {
     const label = getComputedStyle(document.querySelector('#why')!);
-    const copy = getComputedStyle(document.querySelector('section[aria-labelledby="why"] > p')!);
+    const copy = getComputedStyle(document.querySelector('section[aria-labelledby="why"] p')!);
     const description = getComputedStyle(document.querySelector('main > header > p:last-child')!);
     return {
       labelSize: Number.parseFloat(label.fontSize),
@@ -509,7 +523,7 @@ test('uses open leading and readable section labels from the utility layer', asy
   expect(metrics.descriptionLeading).toBeGreaterThanOrEqual(1.85);
 });
 
-test('vertically centers the active navigation dot on About and Work', async ({ page }) => {
+test('vertically centers the active navigation marker on About and Work', async ({ page }) => {
   for (const route of ['/ko/about/', '/ko/work/']) {
     await page.goto(route);
     const centers = await page.locator('header nav a[aria-current="page"]').evaluate(element => {
@@ -522,6 +536,7 @@ test('vertically centers the active navigation dot on About and Work', async ({ 
       };
     });
     expect(Math.abs(centers.link - centers.dot)).toBeLessThan(1);
+    await expect(page.locator('header nav a[aria-current="page"] > span').first()).toHaveCSS('background-color', 'rgb(196, 40, 43)');
   }
 });
 
@@ -559,7 +574,7 @@ test('settings works without IDs, traps dialog focus and closes with Escape', as
   await page.locator('footer [data-tracking-settings]').click();
   await expect(page.getByRole('dialog')).toBeVisible();
   await expect(page.locator('[data-tracking-empty]')).toBeVisible();
-  const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+  const audit = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze();
   expect(audit.violations).toEqual([]);
   await page.keyboard.press('Escape');
   await expect(page.getByRole('dialog')).not.toBeVisible();
@@ -572,7 +587,7 @@ test('project navigation, direct localized entry, and missing route', async ({ p
   await expect(page.locator('h1')).toHaveText('BLIS 연고편입 LMS');
   await page.reload();
   await expect(page.locator('h1')).toHaveText('BLIS 연고편입 LMS');
-  await page.getByRole('link', { name: 'Work 목록으로 돌아가기' }).click();
+  await page.getByRole('link', { name: '작업 목록으로 돌아가기' }).click();
   await expect(page).toHaveURL(/\/ko\/work\/$/);
   const response = await page.goto('/this-page-does-not-exist/');
   expect(response?.status()).toBe(404);

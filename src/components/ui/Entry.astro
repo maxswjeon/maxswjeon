@@ -1,0 +1,28 @@
+---
+interface Props {
+  as?: 'div' | 'li' | 'article' | 'section';
+  id?: string;
+  link?: boolean;
+  /** Vertical padding utility; passed separately so it never competes with the default in the cascade. */
+  padding?: string;
+  class?: string;
+  'aria-labelledby'?: string;
+}
+
+const { as: Tag = 'div', link = false, padding = 'py-6', class: className, ...attrs }: Props = Astro.props;
+// A conditional `slot="meta"` child still registers the slot, so check the rendered output.
+const meta = Astro.slots.has('meta') ? (await Astro.slots.render('meta')).trim() : '';
+---
+
+<Tag
+  class:list={[
+    'grid gap-x-8 gap-y-2 split:grid-cols-[9.5rem_minmax(0,1fr)]',
+    padding,
+    link && 'group relative -mx-4 rounded-xl px-4 transition-colors duration-150 hover:bg-white split:-mx-6 split:px-6',
+    className,
+  ]}
+  {...attrs}
+>
+  {meta && <div class="text-meta text-soft tabular-nums split:pt-[0.2em]"><Fragment set:html={meta} /></div>}
+  <div class="min-w-0 split:col-start-2"><slot /></div>
+</Tag>

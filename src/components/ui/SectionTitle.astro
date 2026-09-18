@@ -1,0 +1,16 @@
+---
+interface Props {
+  id: string;
+  lines: readonly string[] | string;
+}
+
+const { id, lines: input } = Astro.props;
+const lines = typeof input === 'string' ? [input] : input;
+const label = lines.join(' ').replaceAll(' ', ' ');
+---
+
+<h2 {id} class="text-[1.375rem] leading-heading font-bold tracking-[-0.025em] text-balance" aria-label={lines.length > 1 ? label : undefined}>
+  {lines.length > 1
+    ? lines.map((line, index) => <Fragment>{index > 0 && ' '}<span class="block split:inline" aria-hidden="true">{line}</span></Fragment>)
+    : lines[0]}
+</h2>
