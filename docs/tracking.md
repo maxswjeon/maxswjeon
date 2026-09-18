@@ -10,7 +10,7 @@
 
 페이지별 이용, 유입 경로, 기기 정보, 클릭·스크롤 같은 상세 측정은 아래의 기존 동의 분류를 따른다. 분석·마케팅 도구는 해당 동의 후에만 로드한다. Google의 쿠키 없는 측정 요청도 동의 전에 전송하도록 변경하지 않는다.
 
-기본 집계를 위해 CloudFront 액세스 로그를 추가로 켜지 않는다. 액세스 로그에는 IP 주소, 경로, user-agent, referrer 등 요청별 정보가 포함될 수 있어 집계 지표와 다르다. 브라우저 저장을 사용하지 않는다는 사실만으로 모든 지역의 개인정보 요건을 충족한다고 단정할 수는 없다.
+이 집계는 방문자별 정보를 처리하지 않으므로 방문자에게 보이는 개인정보 안내와 동의 배너에는 적지 않는다. 기본 집계를 위해 CloudFront 액세스 로그를 추가로 켜지 않는다. 액세스 로그를 켜게 되면 개인정보 안내에 수집 항목과 보관 기간을 추가해야 한다. 액세스 로그에는 IP 주소, 경로, user-agent, referrer 등 요청별 정보가 포함될 수 있어 집계 지표와 다르다. 브라우저 저장을 사용하지 않는다는 사실만으로 모든 지역의 개인정보 요건을 충족한다고 단정할 수는 없다.
 
 확인한 공식 문서 (2026-09-17): [CloudFront 기본 지표](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/viewing-cloudfront-metrics.html), [Usage Reports](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/usage-charts.html), [액세스 로그 필드](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/standard-logs-reference.html), [ICO 저장·접근 기술의 범위](https://ico.org.uk/for-organisations/direct-marketing-and-privacy-and-electronic-communications/guidance-on-the-use-of-storage-and-access-technologies/what-are-storage-and-access-technologies/).
 
