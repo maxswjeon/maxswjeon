@@ -36,7 +36,9 @@ samples are written to `test-results/performance/`.
 
 The first run exceeded the transfer budget because both regular and bold
 D2Coding font files were loaded. Keeping the required regular face and removing
-the unused 1.59 MB bold face brought all measured routes below 2 MiB.
+the unused 1.59 MB bold face brought all measured routes below 2 MiB. The
+2026-09-18 redesign removed D2Coding entirely; the five sampled routes now
+transfer roughly 0.36-0.50 MB each.
 
 These are reproducible lab measurements, not field data. Production CDN,
 network, device, and real-user interaction conditions can produce different

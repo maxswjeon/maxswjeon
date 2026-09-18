@@ -4,52 +4,32 @@
 @import "tailwindcss/utilities.css" layer(utilities) source("../");
 
 @theme {
-  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-  --font-mono: "D2Coding", "Pretendard Variable", Pretendard, monospace;
-  --color-canvas: #090b0f;
-  --color-canvas-deep: #0f141a;
-  --color-surface: #f4f5f2;
-  --color-ink: #111820;
-  --color-ink-soft: #56616b;
-  --color-signal: #53e0c2;
-  --leading-display: 1.12;
-  --leading-heading: 1.22;
-  --leading-copy: 1.9;
-  --leading-meta: 1.65;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
+  --breakpoint-split: 53.75rem;
+  --color-mist: #f5f6f8;
+  --color-ink: #15171c;
+  --color-soft: #5b616c;
+  --color-rule: #dde0e5;
+  --color-signal: #c4282b;
+  --color-signal-deep: #8f1d20;
+  --color-signal-tint: #f8e7e7;
+  --color-focus: #1d4ed8;
+  --text-meta: 0.875rem;
+  --text-meta--line-height: 1.6;
+  --text-label: 1.125rem;
+  --text-label--line-height: 1.6;
+  --text-body: clamp(1rem, 0.3vw + 0.94rem, 1.125rem);
+  --text-body--line-height: 1.875;
+  --leading-display: 1.18;
+  --leading-heading: 1.4;
+  --spacing-rail: clamp(2.5rem, 7vh, 5rem);
+  --spacing-section: clamp(4.5rem, 9vw, 7.5rem);
 }
 
 @layer base {
-  @font-face {
-    font-family: "D2Coding";
-    src: url("https://naver.github.io/d2-coding-font/fonts/D2Coding-Regular.woff2") format("woff2");
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-  }
-
   :root {
-    --size-meta: 0.8125rem;
-    --size-small: 0.9375rem;
-    --size-body: clamp(1rem, 0.3vw + 0.94rem, 1.125rem);
-    --canvas: #090b0f;
-    --canvas-deep: #0f141a;
-    --surface: #f4f5f2;
-    --surface-soft: #e8ebec;
-    --ink: #111820;
-    --ink-soft: #56616b;
-    --text: #f2f4f7;
-    --text-soft: #9aa5b4;
-    --signal: #53e0c2;
-    --signal-dark: #087f6c;
-    --signal-soft: #c9f8ed;
-    --rule: rgb(255 255 255 / 10%);
-    --rule-dark: rgb(17 24 32 / 20%);
-    --focus: #70a5ff;
-    --color-text: var(--ink);
-    --color-surface: var(--surface);
-    --color-accent: var(--signal-dark);
-    --color-focus: #0759b8;
-    --shell: min(100% - clamp(2rem, 5vw, 6rem), 90rem);
+    --shell: min(100% - clamp(2rem, 9vw, 8rem), 84rem);
+    color-scheme: light;
   }
 
   * {
@@ -57,50 +37,65 @@
   }
 
   html {
-    background: var(--canvas);
-    color: var(--text);
+    background: var(--color-mist);
+    color: var(--color-ink);
     font-family: var(--font-sans);
     font-synthesis: none;
     scroll-behavior: smooth;
     text-rendering: optimizeLegibility;
     word-break: keep-all;
     overflow-wrap: break-word;
+    -webkit-text-size-adjust: 100%;
   }
 
   body {
     margin: 0;
     min-width: 320px;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
-  main {
-    overflow: clip;
+  h1, h2, h3, h4, p, ul, ol, dl, dd, figure {
+    margin: 0;
+  }
+
+  ul, ol {
+    padding: 0;
+    list-style: none;
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
   }
 
   a {
     color: inherit;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.24em;
+    text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
+    transition: color 150ms, text-decoration-color 150ms;
   }
 
   a:hover {
-    color: var(--signal);
+    text-decoration-color: currentColor;
   }
 
-  a:focus-visible,
-  button:focus-visible {
-    outline: 3px solid var(--focus);
-    outline-offset: 4px;
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
   }
 
-  button {
+  button, input {
     font: inherit;
   }
-}
 
-@media (max-width: 719px) {
-  :root {
-    --shell: min(100% - 2rem, 90rem);
+  summary {
+    cursor: pointer;
+  }
+
+  ::selection {
+    background: var(--color-signal-tint);
+    color: var(--color-ink);
   }
 }
 

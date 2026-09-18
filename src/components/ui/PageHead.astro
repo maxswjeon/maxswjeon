@@ -1,0 +1,29 @@
+---
+interface Props {
+  lines: readonly string[] | string;
+  /** Keep each semantic line on one visual line from 1280px (Korean headings). */
+  keepLines?: boolean;
+  size?: 'display' | 'title';
+}
+
+const { lines: input, keepLines = false, size = 'title' } = Astro.props;
+const lines = typeof input === 'string' ? [input] : input;
+const label = lines.join(' ').replaceAll(' ', ' ');
+---
+
+<header class="split:pt-34">
+  <h1
+    class:list={[
+      'leading-display font-extrabold tracking-[-0.045em] text-balance',
+      size === 'display'
+        ? 'text-[clamp(2.125rem,9.4vw,2.75rem)] split:text-[clamp(2.125rem,4vw,3.75rem)]'
+        : 'text-[clamp(2rem,8.4vw,2.5rem)] split:text-[clamp(2rem,3.5vw,3.25rem)]',
+    ]}
+    aria-label={lines.length > 1 ? label : undefined}
+  >
+    {lines.length > 1
+      ? lines.map((line) => <span class:list={['block text-balance', keepLines && 'xl:whitespace-nowrap']} aria-hidden="true">{line}</span>)
+      : lines[0]}
+  </h1>
+  <slot />
+</header>

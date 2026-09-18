@@ -60,26 +60,26 @@ const marketingServices = [
 ---
 
 <div class="[&_[hidden]]:hidden" data-tracking-root data-config={JSON.stringify(config)}>
-  <aside class="fixed right-[clamp(1rem,3vw,2rem)] bottom-[clamp(1rem,3vw,2rem)] z-[100] w-[min(32rem,calc(100vw-2rem))] rounded-[0.2rem] border border-current/20 bg-[var(--color-surface,#f4f5f2)] p-4 text-[var(--color-text,#17202a)] shadow-[0_1rem_3rem_rgb(0_0_0/24%)]" data-tracking-banner hidden aria-labelledby="tracking-banner-title">
+  <aside class="fixed right-[clamp(1rem,3vw,2rem)] bottom-[clamp(1rem,3vw,2rem)] z-[100] w-[min(32rem,calc(100vw-2rem))] rounded-xl border border-rule bg-white p-5 text-ink shadow-[0_1rem_3rem_rgb(21_23_28/14%)]" data-tracking-banner hidden aria-labelledby="tracking-banner-title">
     <div>
       <strong id="tracking-banner-title">{copy.title}</strong>
       <p class="mt-[0.35rem] mb-0 text-sm leading-[1.55]">{copy.intro}</p>
     </div>
     <div class="mt-[0.9rem] flex flex-wrap justify-end gap-2 max-[32rem]:[&>button]:flex-auto">
-      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-settings>{copy.settings}</button>
-      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-reject-all>{copy.reject}</button>
-      <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-transparent bg-[var(--color-accent,#087f6c)] px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-accept-all>{copy.accept}</button>
+      <button type="button" class="min-h-10 cursor-pointer rounded-lg border border-rule bg-white hover:border-soft px-[0.8rem] py-[0.55rem] font-[inherit] font-[650]" data-tracking-settings>{copy.settings}</button>
+      <button type="button" class="min-h-10 cursor-pointer rounded-lg border border-rule bg-white hover:border-soft px-[0.8rem] py-[0.55rem] font-[inherit] font-[650]" data-tracking-reject-all>{copy.reject}</button>
+      <button type="button" class="min-h-10 cursor-pointer rounded-lg border border-transparent bg-signal hover:bg-signal-deep px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white" data-tracking-accept-all>{copy.accept}</button>
     </div>
   </aside>
 
-  <dialog class="w-[min(34rem,calc(100vw-2rem))] rounded-[0.2rem] border border-current/20 bg-[var(--color-surface,#f4f5f2)] p-0 text-[var(--color-text,#17202a)] backdrop:bg-[rgb(9_17_28/56%)]" data-tracking-dialog aria-labelledby="tracking-dialog-title">
-    <form class="p-[1.1rem]" method="dialog">
+  <dialog class="w-[min(34rem,calc(100vw-2rem))] rounded-xl border border-rule bg-white p-0 text-ink backdrop:bg-[rgb(21_23_28/45%)]" data-tracking-dialog aria-labelledby="tracking-dialog-title">
+    <form class="p-5" method="dialog">
       <div class="mb-[0.8rem] flex items-start justify-between gap-4">
         <div>
           <strong id="tracking-dialog-title">{copy.title}</strong>
           <p class="mt-[0.35rem] mb-0 text-sm leading-[1.55]">{copy.change}</p>
         </div>
-        <button type="button" class="min-h-10 min-w-10 shrink-0 cursor-pointer border-0 bg-transparent p-1 text-2xl text-inherit focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-close aria-label={copy.close}>×</button>
+        <button type="button" class="min-h-10 min-w-10 shrink-0 cursor-pointer border-0 bg-transparent p-1 text-2xl text-inherit" data-tracking-close aria-label={copy.close}>×</button>
       </div>
 
       <p class="mt-3 mb-0 text-sm leading-[1.55]" data-tracking-empty hidden>
@@ -87,26 +87,26 @@ const marketingServices = [
       </p>
 
       <div data-tracking-options>
-        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]">
+        <label class="flex items-center justify-between gap-4 border-t border-rule py-[0.8rem]">
           <span class="grid gap-[0.2rem]"><strong>{copy.essential}</strong><small class="leading-[1.45]">{copy.essentialDescription}</small></span>
-          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" checked disabled />
+          <input class="h-5 w-5 accent-signal" type="checkbox" checked disabled />
         </label>
-        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]" hidden={analyticsServices.length === 0}>
+        <label class="flex items-center justify-between gap-4 border-t border-rule py-[0.8rem]" hidden={analyticsServices.length === 0}>
           <span class="grid gap-[0.2rem]"><strong>{copy.analytics}</strong><small class="leading-[1.45]">{locale === 'ko' ? <>{analyticsServices.join(', ')}{copy.analyticsDescription}</> : <>{copy.analyticsDescription} {analyticsServices.join(', ')}.</>}</small></span>
-          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" name="analytics" disabled={analyticsServices.length === 0} />
+          <input class="h-5 w-5 accent-signal" type="checkbox" name="analytics" disabled={analyticsServices.length === 0} />
         </label>
-        <label class="flex items-center justify-between gap-4 border-t border-current/15 py-[0.8rem]" hidden={marketingServices.length === 0}>
+        <label class="flex items-center justify-between gap-4 border-t border-rule py-[0.8rem]" hidden={marketingServices.length === 0}>
           <span class="grid gap-[0.2rem]"><strong>{copy.marketing}</strong><small class="leading-[1.45]">{locale === 'ko' ? <>{marketingServices.join(', ')}{copy.marketingDescription}</> : <>{copy.marketingDescription} {marketingServices.join(', ')}.</>}</small></span>
-          <input class="h-5 w-5 accent-[var(--color-accent,#087f6c)]" type="checkbox" name="marketing" disabled={marketingServices.length === 0} />
+          <input class="h-5 w-5 accent-signal" type="checkbox" name="marketing" disabled={marketingServices.length === 0} />
         </label>
 
-        <p class="mt-3 mb-0 rounded-[0.2rem] bg-[color-mix(in_srgb,var(--color-accent,#087f6c)_9%,transparent)] p-[0.65rem] text-sm leading-[1.55]" data-tracking-storage-note role="status" hidden>
+        <p class="mt-3 mb-0 rounded-lg bg-signal-tint p-[0.65rem] text-sm leading-[1.55]" data-tracking-storage-note role="status" hidden>
           {copy.storage}
         </p>
 
         <div class="mt-[0.9rem] flex flex-wrap justify-end gap-2">
-          <button type="button" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-current/32 bg-transparent px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]" data-tracking-reject-all>{copy.reject}</button>
-          <button type="submit" class="min-h-10 cursor-pointer rounded-[0.2rem] border border-transparent bg-[var(--color-accent,#087f6c)] px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white focus-visible:outline-[3px] focus-visible:outline-offset-2 focus-visible:outline-[#0759b8]">{copy.save}</button>
+          <button type="button" class="min-h-10 cursor-pointer rounded-lg border border-rule bg-white hover:border-soft px-[0.8rem] py-[0.55rem] font-[inherit] font-[650]" data-tracking-reject-all>{copy.reject}</button>
+          <button type="submit" class="min-h-10 cursor-pointer rounded-lg border border-transparent bg-signal hover:bg-signal-deep px-[0.8rem] py-[0.55rem] font-[inherit] font-[650] text-white">{copy.save}</button>
         </div>
       </div>
     </form>

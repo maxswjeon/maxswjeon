@@ -2,6 +2,9 @@
 import { Image } from 'astro:assets';
 import { getRelativeLocaleUrl } from 'astro:i18n';
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import Entry from '../ui/Entry.astro';
+import PageHead from '../ui/PageHead.astro';
+import Tags from '../ui/Tags.astro';
 import { projectMedia } from '../../content/project-media';
 import type { Project, ProjectGroup } from '../../content/public';
 import type { Locale } from '../../i18n';
@@ -16,14 +19,13 @@ const { locale, project, projectGroupLabels } = Astro.props;
 const media = projectMedia[project.slug] ?? [];
 const copy = locale === 'ko' ? {
   organizations: '관련 조직',
-  context: 'Context',
-  contribution: 'Contribution',
-  change: 'Change',
-  status: 'Status',
+  context: '배경',
+  contribution: '기여',
+  change: '변화',
+  status: '상태',
   viewGitHub: 'GitHub에서 보기',
   projectLinks: '프로젝트 링크',
-  next: 'Next',
-  back: 'Work 목록으로 돌아가기',
+  back: '작업 목록으로 돌아가기',
   gallery: '프로젝트 이미지',
   source: '출처',
 } : {
@@ -34,7 +36,6 @@ const copy = locale === 'ko' ? {
   status: 'Status',
   viewGitHub: 'View on GitHub',
   projectLinks: 'Project links',
-  next: 'More work',
   back: 'Back to all work',
   gallery: 'Project images',
   source: 'Source',
@@ -53,78 +54,69 @@ const breadcrumbs = [
   { name: 'Work', path: `/${locale}/work/` },
   { name: project.title, path: `/${locale}/work/${project.slug}/` },
 ];
+const label = 'text-label font-bold text-ink';
+const action = 'font-bold text-signal';
 ---
 
 <BaseLayout title={project.title} description={project.summary} pathname={`/${locale}/work/${project.slug}/`} {breadcrumbs} {locale}>
-  <header class="mx-auto w-[var(--shell)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-[4.5rem_6rem]">
-    <p class="m-0 mb-[clamp(2rem,5vw,4rem)] font-mono text-[var(--signal)] text-[length:var(--size-meta)] font-bold uppercase tracking-[0.04em]">{projectGroupLabels[project.group]} · {project.eyebrow}</p>
+  <PageHead lines={project.title}>
+    <Tags items={[projectGroupLabels[project.group], ...project.eyebrow.split(' · ')]} />
     {project.organizations && (
-      <ul class="mt-5 flex list-none flex-wrap gap-2 p-0" aria-label={copy.organizations}>
-        {project.organizations.map((organization) => (
-          <li>
-            <a class="inline-flex border border-[var(--rule)] px-2.5 py-1 font-mono text-sm leading-meta text-[var(--signal)] no-underline" href={organization.href} target="_blank" rel="noopener">{organization.label} ↗</a>
-          </li>
-        ))}
+      <ul class="mt-3 flex flex-wrap gap-x-4 text-meta text-soft" aria-label={copy.organizations}>
+        {project.organizations.map((organization) => <li><a href={organization.href} target="_blank" rel="noopener">{organization.label} ↗</a></li>)}
       </ul>
     )}
-    <h1 class="m-0 max-w-[15em] text-balance text-[clamp(2.75rem,12vw,4rem)] font-bold tracking-[-0.055em] leading-display break-keep md:text-[clamp(3rem,5.8vw,5.25rem)]">{project.title}</h1>
-    <p class="mt-[clamp(2.5rem,5vw,4rem)] mr-0 mb-0 ml-auto max-w-[39rem] text-[var(--text-soft)] text-[length:var(--size-body)] leading-copy max-[719px]:ml-0">{project.summary}</p>
-  </header>
+    <p class="mt-8 max-w-[40rem] text-body text-soft">{project.summary}</p>
+  </PageHead>
+
   {media.length > 0 && (
-    <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 pb-[clamp(4rem,8vw,8rem)]" aria-label={`${project.title} ${copy.gallery}`}>
+    <section class="mt-14 grid gap-8" aria-label={`${project.title} ${copy.gallery}`}>
       {media.map((item, index) => {
         const localized = locale === 'en' ? englishMedia[project.slug]?.[index] : undefined;
         return (
-          <figure class:list={[
-            'm-0 max-[719px]:col-span-full max-[719px]:col-start-1',
-            item.layout === 'portrait'
-              ? 'col-start-5 col-span-4 max-[719px]:w-[min(100%,28rem)] max-[719px]:justify-self-center'
-              : 'col-start-3 col-span-9',
-          ]}>
+          <figure class:list={[item.layout === 'portrait' && 'w-[min(100%,24rem)]']}>
             <Image
-              class="block h-auto w-full border border-[var(--rule)]"
+              class="block h-auto w-full rounded-xl border border-rule bg-white"
               src={item.src}
               alt={localized?.alt ?? item.alt}
               widths={item.layout === 'portrait' ? [320, item.src.width] : [640, 960, item.src.width]}
-              sizes={item.layout === 'portrait' ? '(max-width: 719px) calc(100vw - 2rem), 28rem' : '(max-width: 719px) calc(100vw - 2rem), 75vw'}
+              sizes={item.layout === 'portrait' ? '(min-width: 30rem) 24rem, calc(100vw - 2rem)' : '(min-width: 53.75rem) 60vw, calc(100vw - 2rem)'}
               loading="lazy"
             />
-            <figcaption class="mt-[0.8rem] flex justify-between gap-4 font-mono text-[var(--text-soft)] text-[length:var(--size-meta)] leading-[1.6] max-[719px]:flex-col max-[719px]:gap-1">
+            <figcaption class="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-meta text-soft">
               <span>{localized?.caption ?? item.caption}</span>
-              {item.source && <a class="text-[var(--signal)]" href={item.source} target="_blank" rel="noopener">{copy.source} ↗</a>}
+              {item.source && <a class="text-signal" href={item.source} target="_blank" rel="noopener">{copy.source} ↗</a>}
             </figcaption>
           </figure>
         );
       })}
     </section>
   )}
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="context">
-    <h2 class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-4" id="context">01 · {copy.context}</h2>
-    <p class="col-span-7 col-start-5 m-0 max-w-none text-[clamp(1.0625rem,calc(0.6vw+0.95rem),1.25rem)] leading-copy max-[719px]:col-span-full max-[719px]:col-start-1">{project.problem}</p>
-  </section>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="contribution">
-    <h2 class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-4" id="contribution">02 · {copy.contribution}</h2>
-    <p class="col-span-7 col-start-5 m-0 max-w-none text-[clamp(1.0625rem,calc(0.6vw+0.95rem),1.25rem)] leading-copy max-[719px]:col-span-full max-[719px]:col-start-1">{project.contribution}</p>
-  </section>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="change">
-    <h2 class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-4" id="change">03 · {copy.change}</h2>
-    <p class="col-span-7 col-start-5 m-0 max-w-none text-[clamp(1.0625rem,calc(0.6vw+0.95rem),1.25rem)] leading-copy max-[719px]:col-span-full max-[719px]:col-start-1">{project.change}</p>
-  </section>
-  <section class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6 border-t border-[var(--rule)] py-[clamp(3.5rem,7vw,6.5rem)]" aria-labelledby="status">
-    <h2 class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-4" id="status">04 · {copy.status}</h2>
-    <div class="col-span-7 col-start-5 m-0 max-w-none text-[clamp(1.0625rem,calc(0.6vw+0.95rem),1.25rem)] leading-copy [&>p:first-child]:mt-0 max-[719px]:col-span-full max-[719px]:col-start-1">
-      <p class="mt-0 border-l-4 border-[var(--signal-dark)] bg-[var(--signal-soft)] px-[1.35rem] py-5 text-[0.95rem] text-[var(--ink)] leading-[1.7]">{project.status}</p>
-      {project.link && <p><a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={project.link} target="_blank" rel="noopener">{copy.viewGitHub} <span aria-hidden="true">↗</span></a></p>}
+
+  <div class="mt-section divide-y divide-rule border-y border-rule">
+    <Entry as="section" padding="py-8" aria-labelledby="context">
+      <h2 slot="meta" class={label} id="context">{copy.context}</h2>
+      <p class="text-body">{project.problem}</p>
+    </Entry>
+    <Entry as="section" padding="py-8" aria-labelledby="contribution">
+      <h2 slot="meta" class={label} id="contribution">{copy.contribution}</h2>
+      <p class="text-body">{project.contribution}</p>
+    </Entry>
+    <Entry as="section" padding="py-8" aria-labelledby="change">
+      <h2 slot="meta" class={label} id="change">{copy.change}</h2>
+      <p class="text-body">{project.change}</p>
+    </Entry>
+    <Entry as="section" padding="py-8" aria-labelledby="status">
+      <h2 slot="meta" class={label} id="status">{copy.status}</h2>
+      <p class="rounded-xl border border-rule bg-white px-5 py-4 text-body">{project.status}</p>
+      {project.link && <p class="mt-5"><a class={action} href={project.link} target="_blank" rel="noopener">{copy.viewGitHub} <span aria-hidden="true">↗</span></a></p>}
       {project.links && (
-        <ul class="mt-7 flex list-none flex-wrap gap-x-6 gap-y-3 p-0" aria-label={`${project.title} ${copy.projectLinks}`}>
-          {project.links.map((link) => (
-            <li><a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={link.href} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>
-          ))}
+        <ul class="mt-5 flex flex-wrap gap-x-6 gap-y-2" aria-label={`${project.title} ${copy.projectLinks}`}>
+          {project.links.map((link) => <li><a class={action} href={link.href} target="_blank" rel="noopener">{link.label} <span aria-hidden="true">↗</span></a></li>)}
         </ul>
       )}
-    </div>
-  </section>
-  <section class="border-t border-[var(--rule)] py-[clamp(5rem,10vw,10rem)] max-[719px]:py-[5.5rem]">
-    <div class="mx-auto grid w-[var(--shell)] grid-cols-12 gap-6"><p class="col-span-3 m-0 font-mono text-sm font-bold uppercase tracking-[0.04em] text-[var(--signal)] leading-meta md:text-base max-[719px]:col-span-full max-[719px]:mb-8">{copy.next}</p><div class="col-start-4 col-span-9 max-[719px]:col-span-full max-[719px]:col-start-1"><a class="inline-flex items-center gap-[0.45rem] font-bold text-[var(--signal)]" href={getRelativeLocaleUrl(locale, 'work')}>{copy.back} <span aria-hidden="true">←</span></a></div></div>
-  </section>
+    </Entry>
+  </div>
+
+  <p class="mt-12"><a class={action} href={getRelativeLocaleUrl(locale, 'work')}>{copy.back}</a></p>
 </BaseLayout>

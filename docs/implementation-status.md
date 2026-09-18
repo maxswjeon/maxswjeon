@@ -29,3 +29,7 @@ The final 20-test Chromium suite passes after the content, hierarchy, media, loc
 ## pnpm migration
 
 The user selected pnpm and gitignore.io. pnpm 12.4.1 is pinned in `package.json`; `pnpm-lock.yaml` replaces the imported npm lockfile. CI, deployment, browser-server commands, and setup instructions use pnpm. Frozen installation, Astro check/build, Node tests, and 16 disposable Git ignore/include checks passed. The generated gitignore.io template is preserved verbatim before project additions, including private-document exclusions and `.env.example` inclusion.
+
+## Profile redesign :: 2026-09-18
+
+The visual system was replaced after two rounds of HTML comps; the user chose the "Profile" direction. Pages now sit on a light mist ground with a sticky identity column (avatar, name, navigation, contact) from 860px, CV-style rows with a dated meta column, Pretendard only, and signal red `#c4282b` as the single accent. D2Coding, the dark canvas, the mint accent, numbered markers, and the dropdown language menu were removed; Korean pages use Korean navigation labels. `DESIGN.md` describes the current system. Verification: `pnpm build`, `pnpm test` (25), `astro check` (clean), `pnpm test:e2e` (23, axe now includes WCAG 2.2 AA, layout checked at 360/768/900/1440), and `pnpm test:performance` (5 routes, 0.36-0.50 MB each), followed by an independent code review whose findings were fixed.
